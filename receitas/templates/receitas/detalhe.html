@@ -68,6 +68,11 @@
     {% if user.is_authenticated %}
       <form class="formulario" method="post" action="{% url 'receitas:comentar' receita.slug %}">
         {% csrf_token %}
+        {{ formulario_comentario.carimbo_tempo }}
+        <div class="campo-armadilha" aria-hidden="true">
+          <label for="{{ formulario_comentario.endereco_web.id_for_label }}">Deixe este campo em branco</label>
+          {{ formulario_comentario.endereco_web }}
+        </div>
         <div class="formulario__campo">
           {{ formulario_comentario.texto.label_tag }}
           {{ formulario_comentario.texto }}

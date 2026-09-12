@@ -1,7 +1,7 @@
 """
 Testes do domínio de receitas: models (spec 001), views públicas de
-listagem/detalhe (spec 002), comentários (spec 005) e limite de taxa na
-criação de comentário (spec 006).
+listagem/detalhe (spec 002), comentários (spec 005), limite de taxa (spec
+006) e honeypot/time-trap (spec 007) na criação de comentário.
 
 Estratégia de isolamento: tudo aqui é ORM/HTTP de teste do Django rodando
 contra o banco de teste do pytest-django (`@pytest.mark.django_db`) — sem
@@ -13,11 +13,13 @@ vazarem de um teste para o outro.
 
 from __future__ import annotations
 
+import time
 from typing import Any
 from uuid import uuid4
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.core import signing
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -25,6 +27,7 @@ from django.db.models.deletion import ProtectedError
 from django.test import Client
 from django.urls import reverse
 
+from .forms import _ASSINATURA_SALT
 from .models import Categoria, Comentario, Receita, Tag
 
 pytestmark = pytest.mark.django_db
@@ -119,6 +122,20 @@ def _comentario(**kwargs: Any) -> Comentario:
     }
     dados.update(kwargs)
     return Comentario.objects.create(**dados)
+
+
+def _carimbo_valido(segundos_atras: float = 5) -> str:
+    """Gera um carimbo assinado como se tivesse sido renderizado há N segundos.
+
+    Args:
+        segundos_atras (float): há quantos segundos simular que o
+            formulário foi renderizado. Default (5s) passa no time-trap
+            (mínimo de 2s); passar 0 simula um envio no mesmo instante.
+
+    Returns:
+        str: valor pronto para o campo `carimbo_tempo` do POST (spec 007).
+    """
+    return signing.dumps(time.time() - segundos_atras, salt=_ASSINATURA_SALT)
 
 
 # -----------------------------------------------------------------------------
@@ -574,7 +591,7 @@ def test_post_valido_cria_comentario_e_redireciona(client: Client) -> None:
 
     resposta = client.post(
         reverse("receitas:comentar", kwargs={"slug": receita.slug}),
-        {"texto": "Ficou incrível!"},
+        {"texto": "Ficou incrível!", "carimbo_tempo": _carimbo_valido()},
         follow=True,
     )
 
@@ -589,7 +606,7 @@ def test_post_com_texto_vazio_nao_cria_comentario(client: Client) -> None:
 
     resposta = client.post(
         reverse("receitas:comentar", kwargs={"slug": receita.slug}),
-        {"texto": "   "},
+        {"texto": "   ", "carimbo_tempo": _carimbo_valido()},
         follow=True,
     )
 
@@ -645,12 +662,15 @@ def test_bloqueia_a_partir_do_sexto_comentario_no_mesmo_ip(client: Client) -> No
     for indice in range(5):
         client.post(
             reverse("receitas:comentar", kwargs={"slug": receita.slug}),
-            {"texto": f"Comentário número {indice}"},
+            {
+                "texto": f"Comentário número {indice}",
+                "carimbo_tempo": _carimbo_valido(),
+            },
         )
 
     resposta = client.post(
         reverse("receitas:comentar", kwargs={"slug": receita.slug}),
-        {"texto": "Este deveria ser bloqueado"},
+        {"texto": "Este deveria ser bloqueado", "carimbo_tempo": _carimbo_valido()},
     )
 
     assert Comentario.objects.filter(receita=receita).count() == 5
@@ -666,17 +686,123 @@ def test_dois_ips_nao_compartilham_o_limite_de_comentarios(client: Client) -> No
     for indice in range(5):
         client.post(
             reverse("receitas:comentar", kwargs={"slug": receita.slug}),
-            {"texto": f"Comentário número {indice}"},
+            {
+                "texto": f"Comentário número {indice}",
+                "carimbo_tempo": _carimbo_valido(),
+            },
             REMOTE_ADDR="10.0.0.1",
         )
 
     client.post(
         reverse("receitas:comentar", kwargs={"slug": receita.slug}),
-        {"texto": "Comentário de outro IP"},
+        {"texto": "Comentário de outro IP", "carimbo_tempo": _carimbo_valido()},
         REMOTE_ADDR="10.0.0.2",
     )
 
     assert Comentario.objects.filter(texto="Comentário de outro IP").exists()
+
+
+# -----------------------------------------------------------------------------
+# Honeypot e time-trap (spec 007, RF-01, RF-02, RF-03, RNF-03)
+# -----------------------------------------------------------------------------
+def test_honeypot_preenchido_nao_cria_comentario_mas_finge_sucesso(
+    client: Client,
+) -> None:
+    """Bot que preenche o campo-armadilha recebe a mesma resposta de sucesso."""
+    receita = _receita(publicado=True)
+    autor = User.objects.create_user(username="leitor", password="senha-forte-123")
+    client.force_login(autor)
+
+    resposta = client.post(
+        reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+        {
+            "texto": "Comentário de bot",
+            "endereco_web": "http://spam.exemplo.com",
+            "carimbo_tempo": _carimbo_valido(),
+        },
+        follow=True,
+    )
+
+    assert not Comentario.objects.filter(receita=receita).exists()
+    assert "Comentário publicado!" in resposta.content.decode()
+
+
+def test_carimbo_recente_demais_bloqueia_o_envio(client: Client) -> None:
+    """POST enviado rápido demais depois do GET é tratado como bot."""
+    receita = _receita(publicado=True)
+    autor = User.objects.create_user(username="leitor", password="senha-forte-123")
+    client.force_login(autor)
+
+    resposta = client.post(
+        reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+        {"texto": "Muito rápido", "carimbo_tempo": _carimbo_valido(segundos_atras=0)},
+        follow=True,
+    )
+
+    assert not Comentario.objects.filter(receita=receita).exists()
+    assert "Comentário publicado!" in resposta.content.decode()
+
+
+def test_carimbo_ausente_ou_adulterado_e_tratado_como_suspeito(client: Client) -> None:
+    """Sem carimbo ou com um valor forjado, o envio é tratado como bot."""
+    receita = _receita(publicado=True)
+    autor = User.objects.create_user(username="leitor", password="senha-forte-123")
+    client.force_login(autor)
+
+    resposta = client.post(
+        reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+        {"texto": "Sem carimbo", "carimbo_tempo": "valor-forjado"},
+        follow=True,
+    )
+
+    assert not Comentario.objects.filter(receita=receita).exists()
+    assert "Comentário publicado!" in resposta.content.decode()
+
+
+def test_envio_humano_normal_ainda_cria_comentario(client: Client) -> None:
+    """Honeypot vazio + tempo plausível: o comentário é criado normalmente."""
+    receita = _receita(publicado=True)
+    autor = User.objects.create_user(username="leitor", password="senha-forte-123")
+    client.force_login(autor)
+
+    client.post(
+        reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+        {"texto": "Comentário humano de verdade", "carimbo_tempo": _carimbo_valido()},
+    )
+
+    assert Comentario.objects.filter(
+        receita=receita, texto="Comentário humano de verdade"
+    ).exists()
+
+
+def test_envio_bloqueado_por_antibot_nao_consome_o_limite_de_taxa(
+    client: Client,
+) -> None:
+    """5 envios pegos pelo honeypot não esgotam o limite de taxa da spec 006."""
+    receita = _receita(publicado=True)
+    autor = User.objects.create_user(username="leitor", password="senha-forte-123")
+    client.force_login(autor)
+    for _ in range(5):
+        client.post(
+            reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+            {
+                "texto": "Bot",
+                "endereco_web": "http://spam.exemplo.com",
+                "carimbo_tempo": _carimbo_valido(),
+            },
+        )
+
+    client.post(
+        reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+        {
+            "texto": "Comentário humano depois dos bots",
+            "carimbo_tempo": _carimbo_valido(),
+        },
+    )
+
+    assert Comentario.objects.filter(
+        receita=receita, texto="Comentário humano depois dos bots"
+    ).exists()
 
 
 # -----------------------------------------------------------------------------
