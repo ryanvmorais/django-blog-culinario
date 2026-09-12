@@ -1,0 +1,9 @@
+{# Feedback de django.contrib.messages (spec 004, RF-06). Sobrevive a um #}
+{# redirect (login/logout/cadastro) porque o framework guarda na sessão. #}
+{% if messages %}
+  <div class="container mensagens">
+    {% for message in messages %}
+      <p class="mensagem mensagem--{{ message.tags }}">{{ message }}</p>
+    {% endfor %}
+  </div>
+{% endif %}

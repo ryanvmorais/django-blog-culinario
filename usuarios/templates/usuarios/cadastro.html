@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block titulo %}Criar conta — Blog Culinário{% endblock %}
+
+{% block content %}
+  <section class="container cabecalho-pagina">
+    <h1>Criar conta</h1>
+
+    <form class="formulario" method="post" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="formulario__campo">
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.help_text %}
+            <p class="formulario__ajuda">{{ field.help_text }}</p>
+          {% endif %}
+          {% for erro in field.errors %}
+            <p class="formulario__erro">{{ erro }}</p>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="botao botao--primario">Criar conta</button>
+    </form>
+
+    <p>Já tem conta? <a href="{% url 'usuarios:entrar' %}">Entrar</a></p>
+  </section>
+{% endblock %}
