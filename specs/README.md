@@ -45,6 +45,7 @@ Nenhuma fase avança sem o "ok" explícito do Ryan. Comandos: `/spec nova <nome>
 | [001-modelagem-receitas](001-modelagem-receitas/requirements.md) | Modelos `Categoria`, `Receita`, `Tag` + admin | concluído |
 | [002-listagem-detalhe-receitas](002-listagem-detalhe-receitas/requirements.md) | Views públicas: listagem paginada + detalhe de receita | concluído |
 | [003-busca-e-filtros](003-busca-e-filtros/requirements.md) | Busca textual + filtro por categoria/tag na listagem | concluído |
+| [004-autenticacao](004-autenticacao/requirements.md) | Cadastro, login e logout via django.contrib.auth | concluído |
 
 ## Notas de manutenção
 
