@@ -23,7 +23,11 @@ from django.views.generic import DetailView, ListView
 
 from blog_culinario.limitacao import limite_excedido
 
-from .forms import FormularioComentario
+from .forms import (
+    FormularioComentario,
+    eh_envio_suspeito_de_bot,
+    gerar_carimbo_de_tempo,
+)
 from .models import Receita
 
 
@@ -134,7 +138,11 @@ class ReceitaDetailView(DetailView):
         contexto = super().get_context_data(**kwargs)
         comentarios = self.object.comentarios.filter(aprovado=True)
         contexto["comentarios"] = comentarios.select_related("autor")
-        contexto["formulario_comentario"] = FormularioComentario()
+        # carimbo_tempo nasce aqui, no momento em que a página é servida --
+        # o time-trap da spec 007 (RF-02) compara com o instante do POST.
+        contexto["formulario_comentario"] = FormularioComentario(
+            initial={"carimbo_tempo": gerar_carimbo_de_tempo()}
+        )
         return contexto
 
 
@@ -168,8 +176,10 @@ class ComentarioCreateView(LoginRequiredMixin, View):
         """Valida e salva o comentário, ou volta com uma mensagem de erro (ADR-3).
 
         Também bloqueia o IP que já atingiu o limite de comentários na
-        janela de tempo (spec 006, RF-02), antes de qualquer acesso ao
-        banco.
+        janela de tempo (spec 006, RF-02) e filtra bots via honeypot/
+        time-trap (spec 007) — nessa ordem, antes de qualquer acesso ao
+        banco. Um envio pego pelo honeypot/time-trap finge sucesso sem
+        salvar nada e sem consumir o limite de taxa (spec 007, ADR-3, ADR-4).
 
         Args:
             request (HttpRequest): requisição POST recebida, já autenticada.
@@ -179,13 +189,18 @@ class ComentarioCreateView(LoginRequiredMixin, View):
             HttpResponse: redireciona de volta para `receitas:detalhe`,
             na âncora `#comentarios`.
         """
+        url_receita = reverse("receitas:detalhe", kwargs={"slug": slug})
+        url_retorno = f"{url_receita}#comentarios"
+
+        if eh_envio_suspeito_de_bot(request.POST):
+            messages.success(request, "Comentário publicado!")
+            return redirect(url_retorno)
+
         if limite_excedido(request, "comentario", limite=5, janela_segundos=60):
             messages.error(
                 request, "Você está comentando rápido demais. Aguarde um instante."
             )
-            return redirect(
-                reverse("receitas:detalhe", kwargs={"slug": slug}) + "#comentarios"
-            )
+            return redirect(url_retorno)
 
         receita = get_object_or_404(Receita, slug=slug, publicado=True)
         form = FormularioComentario(request.POST)
@@ -197,6 +212,4 @@ class ComentarioCreateView(LoginRequiredMixin, View):
             messages.success(request, "Comentário publicado!")
         else:
             messages.error(request, "O comentário não pode ficar vazio.")
-        return redirect(
-            reverse("receitas:detalhe", kwargs={"slug": slug}) + "#comentarios"
-        )
+        return redirect(url_retorno)

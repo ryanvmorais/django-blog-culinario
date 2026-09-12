@@ -409,6 +409,17 @@ ol {
   color: var(--cor-erro);
 }
 
+/* Honeypot antibot do formulário de comentário (spec 007, ADR-1). Fora da
+   tela via posição, não display:none/visibility:hidden -- alguns bots
+   simples ignoram só essas duas propriedades ao decidir o que preencher. */
+.campo-armadilha {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 /* Visualmente um link, estruturalmente um <button> dentro de um <form>. */
 .link-botao {
   background: none;
