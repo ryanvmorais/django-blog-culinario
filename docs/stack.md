@@ -22,165 +22,165 @@ SQLite (db.sqlite3)
 
 ### Python
 
-O que é/faz: a linguagem do projeto inteiro — do `manage.py` aos testes.
+**O que é/faz:** a linguagem do projeto inteiro — do `manage.py` aos testes.
 
-Por que esta: é a linguagem que o projeto se propõe a ensinar (blog
+**Por que esta:** é a linguagem que o projeto se propõe a ensinar (blog
 educacional de Python/Django); não havia alternativa em avaliação.
 
-O que estudar: type hints modernos (`X | None`, `list[str]`), f-strings,
+**O que estudar:** type hints modernos (`X | None`, `list[str]`), f-strings,
 compreensões de lista/dict, o módulo `pathlib`.
 
-Docs: https://docs.python.org/3/
+**Docs:** [Documentação oficial](https://docs.python.org/3/)
 
 ### uv
 
-O que é/faz: instala as dependências, cria e gerencia o ambiente virtual
+**O que é/faz:** instala as dependências, cria e gerencia o ambiente virtual
 (`.venv/`), e resolve/fixa as versões no `uv.lock`.
 
-Por que esta: substitui `pip` + `venv` + `pip-tools` por uma ferramenta só,
+**Por que esta:** substitui `pip` + `venv` + `pip-tools` por uma ferramenta só,
 muito mais rápida (escrita em Rust) e com lockfile determinístico — é o
 gerenciador padrão em todos os projetos do Ryan.
 
-O que estudar: `uv sync`, `uv add`/`uv add --dev`, `uv run`, a diferença entre
+**O que estudar:** `uv sync`, `uv add`/`uv add --dev`, `uv run`, a diferença entre
 `pyproject.toml` (piso mínimo de versão) e `uv.lock` (versão exata resolvida).
 
-Docs: https://docs.astral.sh/uv/
+**Docs:** [Documentação oficial](https://docs.astral.sh/uv/)
 
 ## Framework e dados
 
 ### Django
 
-O que é/faz: o framework web — roteamento (`urls.py`), ORM (`models.py`),
+**O que é/faz:** o framework web — roteamento (`urls.py`), ORM (`models.py`),
 templates, formulários, admin e autenticação prontos.
 
-Por que este: é o objeto de estudo do projeto. Entre os frameworks Python,
+**Por que este:** é o objeto de estudo do projeto. Entre os frameworks Python,
 Django foi escolhido por vir "com pilhas incluídas" (admin, auth, ORM,
 migrations) — dá para ensinar uma aplicação completa sem escolher e integrar
 uma dezena de libs separadas, como seria necessário com Flask/FastAPI.
 
-O que estudar: o ciclo requisição -> `urls.py` -> view -> template ->
+**O que estudar:** o ciclo requisição -> `urls.py` -> view -> template ->
 resposta; `QuerySet` e migrations; herança de template (`{% extends %}` +
 `{% block %}`); o `django.contrib.admin`.
 
-Docs: https://docs.djangoproject.com/
+**Docs:** [Documentação oficial](https://docs.djangoproject.com/)
 
 ### SQLite
 
-O que é/faz: o banco de dados — um único arquivo (`db.sqlite3`), sem processo
+**O que é/faz:** o banco de dados — um único arquivo (`db.sqlite3`), sem processo
 de servidor separado.
 
-Por que este: zero configuração para quem clona o repositório para estudar —
+**Por que este:** zero configuração para quem clona o repositório para estudar —
 não exige instalar/subir um Postgres só para rodar `manage.py runserver`. É
 também o banco suportado sem custo extra no plano gratuito do PythonAnywhere,
 o destino de deploy planejado para o projeto. Trocar por PostgreSQL mais
 adiante é só mudar `DATABASES` em `settings/` — o Django isola o código da
 engine de banco.
 
-O que estudar: migrations (`makemigrations`/`migrate`), o shell do Django
+**O que estudar:** migrations (`makemigrations`/`migrate`), o shell do Django
 (`manage.py shell`) para explorar o ORM interativamente.
 
-Docs: https://docs.djangoproject.com/en/stable/ref/databases/#sqlite-notes
+**Docs:** [Documentação oficial](https://docs.djangoproject.com/en/stable/ref/databases/#sqlite-notes)
 
 ### Pillow
 
-O que é/faz: processa as imagens de capa das receitas (`ImageField` do
+**O que é/faz:** processa as imagens de capa das receitas (`ImageField` do
 Django depende dela para validar/manipular imagem).
 
-Por que esta: é a lib padrão de fato do ecossistema Django para `ImageField`
+**Por que esta:** é a lib padrão de fato do ecossistema Django para `ImageField`
 — o próprio framework recomenda.
 
-O que estudar: `ImageField` vs `FileField`, os parâmetros `upload_to`,
+**O que estudar:** `ImageField` vs `FileField`, os parâmetros `upload_to`,
 validação de tipo/tamanho de upload.
 
-Docs: https://pillow.readthedocs.io/
+**Docs:** [Documentação oficial](https://pillow.readthedocs.io/)
 
 ### django-environ
 
-O que é/faz: lê `SECRET_KEY`, `DEBUG` e outras configurações de variáveis de
+**O que é/faz:** lê `SECRET_KEY`, `DEBUG` e outras configurações de variáveis de
 ambiente (arquivo `.env`) em vez de deixá-las hardcoded no `settings.py`.
 
-Por que esta: é a forma mais didática de mostrar "segredo fora do código" sem
+**Por que esta:** é a forma mais didática de mostrar "segredo fora do código" sem
 reinventar um parser de `.env` na mão; alternativa seria `python-decouple`
 (equivalente) ou `os.environ` cru (sem valores default/tipados).
 
-O que estudar: `environ.Env()`, `env.bool()`/`env.list()`, a precedência
+**O que estudar:** `environ.Env()`, `env.bool()`/`env.list()`, a precedência
 "ambiente real > `.env` > default do código".
 
-Docs: https://django-environ.readthedocs.io/
+**Docs:** [Documentação oficial](https://django-environ.readthedocs.io/)
 
 ## Produção
 
 ### WhiteNoise
 
-O que é/faz: serve os arquivos estáticos (CSS/JS) direto do processo Django
+**O que é/faz:** serve os arquivos estáticos (CSS/JS) direto do processo Django
 em produção, com compressão e cache-busting por hash.
 
-Por que esta: o PythonAnywhere (destino de deploy) não exige um servidor de
+**Por que esta:** o PythonAnywhere (destino de deploy) não exige um servidor de
 arquivos estáticos dedicado, mas servir estático direto do Django sem
 WhiteNoise é lento e sem cache correto. É a alternativa mais simples a montar
 Nginx/CDN só para isso.
 
-O que estudar: `STORAGES["staticfiles"]`, `collectstatic`, por que
+**O que estudar:** `STORAGES["staticfiles"]`, `collectstatic`, por que
 `WhiteNoiseMiddleware` fica logo depois de `SecurityMiddleware`.
 
-Docs: https://whitenoise.readthedocs.io/
+**Docs:** [Documentação oficial](https://whitenoise.readthedocs.io/)
 
 ## Qualidade e testes
 
 ### pytest + pytest-django
 
-O que é/faz: roda os testes automatizados; o plugin `pytest-django` ensina o
+**O que é/faz:** roda os testes automatizados; o plugin `pytest-django` ensina o
 pytest a inicializar o Django (settings, banco de teste) antes de rodar.
 
-Por que estes: `pytest` tem sintaxe mais enxuta que o `unittest` embutido do
+**Por que estes:** `pytest` tem sintaxe mais enxuta que o `unittest` embutido do
 Django (`assert` simples em vez de `self.assertEqual`) e é o padrão de fato
 do ecossistema Python.
 
-O que estudar: fixtures do pytest, o marcador `@pytest.mark.django_db`,
+**O que estudar:** fixtures do pytest, o marcador `@pytest.mark.django_db`,
 `pytest caminho::Teste::test_caso` para rodar um teste só.
 
-Docs: https://pytest-django.readthedocs.io/
+**Docs:** [Documentação oficial](https://pytest-django.readthedocs.io/)
 
 ### ruff
 
-O que é/faz: lint (erros de estilo, imports não usados, bugs comuns) e
+**O que é/faz:** lint (erros de estilo, imports não usados, bugs comuns) e
 organização de imports — substitui flake8 + isort + pyupgrade numa ferramenta
 só.
 
-Por que esta: é ordens de magnitude mais rápida que as alternativas
+**Por que esta:** é ordens de magnitude mais rápida que as alternativas
 tradicionais e cobre o mesmo conjunto de regras com uma configuração só.
 
-O que estudar: `ruff check .`, `ruff check --fix`, a leitura de um código de
+**O que estudar:** `ruff check .`, `ruff check --fix`, a leitura de um código de
 regra (`E501`, `F401`) no `pyproject.toml`.
 
-Docs: https://docs.astral.sh/ruff/
+**Docs:** [Documentação oficial](https://docs.astral.sh/ruff/)
 
 ### black
 
-O que é/faz: formata o código automaticamente — não há debate de estilo, o
+**O que é/faz:** formata o código automaticamente — não há debate de estilo, o
 formatador decide.
 
-Por que este: é o formatador Python de fato mais adotado, não-configurável de
+**Por que este:** é o formatador Python de fato mais adotado, não-configurável de
 propósito (evita brigas de estilo em equipe/comunidade).
 
-O que estudar: `black --check .` (só relata) vs `black .` (aplica).
+**O que estudar:** `black --check .` (só relata) vs `black .` (aplica).
 
-Docs: https://black.readthedocs.io/
+**Docs:** [Documentação oficial](https://black.readthedocs.io/)
 
 ### mypy + django-stubs
 
-O que é/faz: checa os type hints estaticamente; `django-stubs` ensina o mypy
+**O que é/faz:** checa os type hints estaticamente; `django-stubs` ensina o mypy
 a entender os tipos dinâmicos do Django (managers, `QuerySet`, campos de
 model).
 
-Por que estes: mypy é o type checker de fato do Python; sem `django-stubs`
+**Por que estes:** mypy é o type checker de fato do Python; sem `django-stubs`
 ele não entende praticamente nada do ORM do Django (managers/campos são
 gerados dinamicamente).
 
-O que estudar: `mypy .`, o que `[tool.django-stubs] django_settings_module`
+**O que estudar:** `mypy .`, o que `[tool.django-stubs] django_settings_module`
 faz, como ler um erro `[import-untyped]`/`[arg-type]`.
 
-Docs: https://github.com/typeddjango/django-stubs
+**Docs:** [Documentação oficial](https://github.com/typeddjango/django-stubs)
 
 ## Peças menores
 
