@@ -1,11 +1,11 @@
 """
-Testes do domínio de receitas (spec 001): slug único, relacionamentos,
-validação de imagem e admin.
+Testes do domínio de receitas: models (spec 001) e views públicas de
+listagem/detalhe (spec 002).
 
-Estratégia de isolamento: tudo aqui é ORM puro do Django rodando contra o
-banco de teste do pytest-django (`@pytest.mark.django_db`) — sem mock. Não
-há I/O externo (rede, storage remoto) neste domínio ainda; o upload de
-imagem usa `SimpleUploadedFile` em memória.
+Estratégia de isolamento: tudo aqui é ORM/HTTP de teste do Django rodando
+contra o banco de teste do pytest-django (`@pytest.mark.django_db`) — sem
+mock. Não há I/O externo (rede, storage remoto) neste domínio ainda; o
+upload de imagem usa `SimpleUploadedFile` em memória.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.deletion import ProtectedError
 from django.test import Client
+from django.urls import reverse
 
 from .models import Categoria, Receita, Tag
 
@@ -200,3 +201,99 @@ def test_listagens_do_admin_respondem_200(client: Client) -> None:
     ]:
         resposta = client.get(url)
         assert resposta.status_code == 200
+
+
+# -----------------------------------------------------------------------------
+# Listagem pública (RF-01, RF-02, RNF-01)
+# -----------------------------------------------------------------------------
+def test_listagem_mostra_somente_publicadas(client: Client) -> None:
+    publicada = _receita(titulo="Receita publicada", publicado=True)
+    _receita(titulo="Receita rascunho", publicado=False)
+
+    resposta = client.get(reverse("receitas:lista"))
+
+    conteudo = resposta.content.decode()
+    assert publicada.titulo in conteudo
+    assert "Receita rascunho" not in conteudo
+
+
+def test_listagem_ordena_mais_recentes_primeiro(client: Client) -> None:
+    mais_antiga = _receita(titulo="Receita antiga", publicado=True)
+    mais_nova = _receita(titulo="Receita nova", publicado=True)
+
+    resposta = client.get(reverse("receitas:lista"))
+
+    titulos = [r.titulo for r in resposta.context["receitas"]]
+    assert titulos.index(mais_nova.titulo) < titulos.index(mais_antiga.titulo)
+
+
+def test_listagem_pagina_com_mais_de_9_receitas(client: Client) -> None:
+    categoria = _categoria()
+    for i in range(10):
+        _receita(titulo=f"Receita {i}", categoria=categoria, publicado=True)
+
+    primeira_pagina = client.get(reverse("receitas:lista"))
+    segunda_pagina = client.get(reverse("receitas:lista"), {"page": 2})
+
+    assert len(primeira_pagina.context["receitas"]) == 9
+    assert len(segunda_pagina.context["receitas"]) == 1
+
+
+def test_listagem_pagina_inexistente_retorna_404(client: Client) -> None:
+    _receita(publicado=True)
+
+    resposta = client.get(reverse("receitas:lista"), {"page": 999})
+
+    assert resposta.status_code == 404
+
+
+def test_listagem_nao_tem_n_mais_1_com_tags(
+    client: Client, django_assert_num_queries: Any
+) -> None:
+    """`select_related`/`prefetch_related` mantêm a query constante (RNF-01)."""
+    categoria = _categoria()
+    for i in range(3):
+        receita = _receita(titulo=f"Receita {i}", categoria=categoria, publicado=True)
+        receita.tags.add(_tag(nome=f"tag-{i}-a"), _tag(nome=f"tag-{i}-b"))
+
+    # 1 count (paginação) + 1 select principal (join de categoria/autor) + 1
+    # prefetch de tags — não cresce com o número de receitas nem de tags.
+    with django_assert_num_queries(3):
+        client.get(reverse("receitas:lista"))
+
+
+# -----------------------------------------------------------------------------
+# Detalhe público (RF-03, RF-04)
+# -----------------------------------------------------------------------------
+def test_detalhe_receita_publicada_retorna_200_com_campos(client: Client) -> None:
+    receita = _receita(publicado=True)
+
+    resposta = client.get(reverse("receitas:detalhe", kwargs={"slug": receita.slug}))
+
+    assert resposta.status_code == 200
+    conteudo = resposta.content.decode()
+    assert receita.titulo in conteudo
+    assert "cenouras" in conteudo  # vem de `ingredientes`, via splitlines
+
+
+def test_detalhe_receita_nao_publicada_retorna_404(client: Client) -> None:
+    receita = _receita(publicado=False)
+
+    resposta = client.get(reverse("receitas:detalhe", kwargs={"slug": receita.slug}))
+
+    assert resposta.status_code == 404
+
+
+def test_detalhe_slug_inexistente_retorna_404(client: Client) -> None:
+    resposta = client.get(reverse("receitas:detalhe", kwargs={"slug": "nao-existe"}))
+
+    assert resposta.status_code == 404
+
+
+def test_detalhe_sem_autor_nao_quebra(client: Client) -> None:
+    receita = _receita(publicado=True, autor=None)
+
+    resposta = client.get(reverse("receitas:detalhe", kwargs={"slug": receita.slug}))
+
+    assert resposta.status_code == 200
+    assert "Autor removido" in resposta.content.decode()

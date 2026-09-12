@@ -1,0 +1,21 @@
+{# Cartão de receita compartilhado entre a home e a listagem (spec 002, ADR-3). #}
+{# Espera uma variável `receita` no contexto. #}
+<article class="cartao-receita">
+  <a href="{% url 'receitas:detalhe' receita.slug %}">
+    {% if receita.imagem_capa %}
+      <img class="cartao-receita__imagem" src="{{ receita.imagem_capa.url }}" alt="{{ receita.titulo }}" />
+    {% else %}
+      <div class="cartao-receita__imagem" aria-hidden="true"></div>
+    {% endif %}
+  </a>
+  <div class="cartao-receita__corpo">
+    <span class="cartao-receita__categoria">{{ receita.categoria.nome }}</span>
+    <h3 class="cartao-receita__titulo">
+      <a href="{% url 'receitas:detalhe' receita.slug %}">{{ receita.titulo }}</a>
+    </h3>
+    <div class="cartao-receita__meta">
+      <span>{{ receita.tempo_preparo_minutos }} min</span>
+      <span>{{ receita.porcoes }} porções</span>
+    </div>
+  </div>
+</article>
