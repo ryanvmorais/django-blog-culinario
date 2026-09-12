@@ -14,8 +14,9 @@
  *   5. Cartões de receita
  *   6. Página de detalhe de receita
  *   7. Botões e badges
- *   8. Rodapé
- *   9. Responsivo (mobile)
+ *   8. Autenticação e mensagens
+ *   9. Rodapé
+ *   10. Responsivo (mobile)
  */
 
 /* 1. Reset e elementos base -------------------------------------------------
@@ -187,7 +188,7 @@ ol {
 }
 
 .navbar__alternador {
-  display: none; /* só aparece no breakpoint mobile, seção 9 */
+  display: none; /* só aparece no breakpoint mobile, seção 10 */
 }
 
 
@@ -350,7 +351,94 @@ ol {
 }
 
 
-/* 8. Rodapé --------------------------------------------------------------- */
+/* 8. Autenticação e mensagens (spec 004) ------------------------------------
+   Formulário de cadastro/login (campos empilhados), botão de logout com
+   cara de link (tem que ser <button> num <form method="post"> por exigência
+   do Django >= 4.1 -- ver ADR-2 da spec), e o feedback de
+   django.contrib.messages. */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  max-width: 420px;
+  margin-top: var(--espaco-6);
+}
+
+.formulario__campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.formulario__campo label {
+  font-weight: 600;
+  font-size: var(--texto-sm);
+}
+
+.formulario__campo input {
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  font: inherit;
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+}
+
+.formulario__ajuda {
+  margin: 0;
+  font-size: var(--texto-xs);
+  color: var(--cor-texto-suave);
+}
+
+.formulario__erro {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--cor-erro);
+}
+
+/* Visualmente um link, estruturalmente um <button> dentro de um <form>. */
+.link-botao {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--cor-texto);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.link-botao:hover {
+  color: var(--cor-primaria);
+}
+
+.mensagens {
+  padding-top: var(--espaco-4);
+}
+
+.mensagem {
+  padding: var(--espaco-3) var(--espaco-4);
+  border-radius: var(--raio-md);
+  font-size: var(--texto-sm);
+}
+
+.mensagem--success {
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria-escura);
+}
+
+.mensagem--error {
+  background: #f8d7da;
+  color: var(--cor-erro);
+}
+
+.mensagem--info,
+.mensagem--warning {
+  background: var(--cor-borda);
+  color: var(--cor-texto);
+}
+
+
+/* 9. Rodapé --------------------------------------------------------------- */
 .rodape {
   margin-top: var(--espaco-16);
   padding-block: var(--espaco-8);
@@ -368,7 +456,7 @@ ol {
 }
 
 
-/* 9. Responsivo (mobile) ---------------------------------------------------
+/* 10. Responsivo (mobile) ---------------------------------------------------
    Abaixo de 720px o menu de links vira painel deslizante, controlado pela
    classe .navbar__links--aberto (alternada por interacoes.js). */
 @media (max-width: 720px) {
