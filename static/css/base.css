@@ -108,6 +108,31 @@ ol {
   padding-block: var(--espaco-12) var(--espaco-4);
 }
 
+/* Formulário de busca da listagem (spec 003). */
+.formulario-busca {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  align-items: center;
+  margin-top: var(--espaco-6);
+}
+
+.formulario-busca label {
+  flex-basis: 100%;
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+}
+
+.formulario-busca input[type="search"] {
+  flex: 1 1 240px;
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  font: inherit;
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+}
+
 /* Controles de anterior/próxima da listagem paginada (spec 002). */
 .paginacao {
   display: flex;
@@ -280,11 +305,13 @@ ol {
 }
 
 .etiqueta {
+  display: inline-block;
   padding: var(--espaco-1) var(--espaco-3);
   border-radius: var(--raio-pill);
   border: 1px solid var(--cor-borda);
   color: var(--cor-destaque-escura);
   font-size: var(--texto-sm);
+  text-decoration: none; /* agora é um link (spec 003, RF-03) */
 }
 
 
