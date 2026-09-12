@@ -1,0 +1,7 @@
+# Arquivos e diretórios ignorados pelo Prettier (formatador automático de código).
+
+# Templates Django — o Prettier não compreende a sintaxe de template
+# {{ variável }} e {% tag %}, quebrando as expressões em múltiplas linhas
+# e corrompendo a renderização pelo parser do Django.
+templates/
+**/templates/**

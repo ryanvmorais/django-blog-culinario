@@ -1,11 +1,14 @@
 """
 Testes do domínio de receitas: models (spec 001), views públicas de
-listagem/detalhe (spec 002) e comentários (spec 005).
+listagem/detalhe (spec 002), comentários (spec 005) e limite de taxa na
+criação de comentário (spec 006).
 
 Estratégia de isolamento: tudo aqui é ORM/HTTP de teste do Django rodando
 contra o banco de teste do pytest-django (`@pytest.mark.django_db`) — sem
 mock. Não há I/O externo (rede, storage remoto) neste domínio ainda; o
-upload de imagem usa `SimpleUploadedFile` em memória.
+upload de imagem usa `SimpleUploadedFile` em memória. O cache é limpo antes
+de cada teste (fixture autouse) para os contadores de limitação de taxa não
+vazarem de um teste para o outro.
 """
 
 from __future__ import annotations
@@ -15,6 +18,7 @@ from uuid import uuid4
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.deletion import ProtectedError
@@ -26,6 +30,12 @@ from .models import Categoria, Comentario, Receita, Tag
 pytestmark = pytest.mark.django_db
 
 User = get_user_model()
+
+
+@pytest.fixture(autouse=True)
+def _limpar_cache_de_limitacao() -> None:
+    """Zera os contadores de limitação de taxa antes de cada teste (spec 006)."""
+    cache.clear()
 
 
 # -----------------------------------------------------------------------------
@@ -622,6 +632,51 @@ def test_login_apos_redirect_volta_para_a_receita(client: Client) -> None:
     url_receita = reverse("receitas:detalhe", kwargs={"slug": receita.slug})
     assert resposta_login.status_code == 302
     assert resposta_login["Location"] == url_receita
+
+
+# -----------------------------------------------------------------------------
+# Limite de comentários por IP (spec 006, RF-02, RNF-02)
+# -----------------------------------------------------------------------------
+def test_bloqueia_a_partir_do_sexto_comentario_no_mesmo_ip(client: Client) -> None:
+    """5 comentários consomem o limite; o 6º não é persistido."""
+    receita = _receita(publicado=True)
+    autor = User.objects.create_user(username="leitor", password="senha-forte-123")
+    client.force_login(autor)
+    for indice in range(5):
+        client.post(
+            reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+            {"texto": f"Comentário número {indice}"},
+        )
+
+    resposta = client.post(
+        reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+        {"texto": "Este deveria ser bloqueado"},
+    )
+
+    assert Comentario.objects.filter(receita=receita).count() == 5
+    assert not Comentario.objects.filter(texto="Este deveria ser bloqueado").exists()
+    assert resposta.status_code == 302
+
+
+def test_dois_ips_nao_compartilham_o_limite_de_comentarios(client: Client) -> None:
+    """O contador é por IP -- outro IP não é afetado pelas tentativas do primeiro."""
+    receita = _receita(publicado=True)
+    autor = User.objects.create_user(username="leitor", password="senha-forte-123")
+    client.force_login(autor)
+    for indice in range(5):
+        client.post(
+            reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+            {"texto": f"Comentário número {indice}"},
+            REMOTE_ADDR="10.0.0.1",
+        )
+
+    client.post(
+        reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+        {"texto": "Comentário de outro IP"},
+        REMOTE_ADDR="10.0.0.2",
+    )
+
+    assert Comentario.objects.filter(texto="Comentário de outro IP").exists()
 
 
 # -----------------------------------------------------------------------------

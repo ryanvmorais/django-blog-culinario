@@ -13,8 +13,11 @@ from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpRequest, HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView
+
+from blog_culinario.limitacao import limite_excedido
 
 from .forms import FormularioCadastro
 
@@ -42,9 +45,36 @@ class CadastroView(FormView):
 
 
 class EntrarView(LoginView):
-    """Login nativo do Django, só com template e mensagem próprios."""
+    """Login nativo do Django, com template, mensagem e limite de tentativas."""
 
     template_name = "usuarios/login.html"
+
+    def post(
+        self, request: HttpRequest, *args: object, **kwargs: object
+    ) -> HttpResponse:
+        """Bloqueia a tentativa se o IP excedeu o limite de tentativas de login.
+
+        Chave por IP, não por username (RNF-02, ADR-3 da spec 006) — evita
+        que um atacante contorne o limite variando o usuário testado a cada
+        tentativa.
+
+        Args:
+            request (HttpRequest): requisição POST recebida.
+            *args (object): argumentos posicionais repassados ao `super().post()`.
+            **kwargs (object): argumentos nomeados repassados ao `super().post()`.
+
+        Returns:
+            HttpResponse: redireciona de volta ao login com mensagem de
+            erro se o limite foi atingido; caso contrário, segue o fluxo
+            normal do `LoginView`.
+        """
+        if limite_excedido(request, "login", limite=5, janela_segundos=300):
+            messages.error(
+                request,
+                "Muitas tentativas de login. Tente novamente em alguns minutos.",
+            )
+            return redirect("usuarios:entrar")
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form: AuthenticationForm) -> HttpResponse:
         """Autentica via `LoginView` e acrescenta a mensagem de boas-vindas.
