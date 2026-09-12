@@ -60,13 +60,13 @@ class EntrarView(LoginView):
 
         Args:
             request (HttpRequest): requisição POST recebida.
-            *args (object): argumentos posicionais repassados ao `super().post()`.
-            **kwargs (object): argumentos nomeados repassados ao `super().post()`.
+            *args (object): argumentos posicionais repassados ao ``super().post()``.
+            **kwargs (object): argumentos nomeados repassados ao ``super().post()``.
 
         Returns:
             HttpResponse: redireciona de volta ao login com mensagem de
             erro se o limite foi atingido; caso contrário, segue o fluxo
-            normal do `LoginView`.
+            normal do ``LoginView``.
         """
         if limite_excedido(request, "login", limite=5, janela_segundos=300):
             messages.error(
@@ -77,13 +77,13 @@ class EntrarView(LoginView):
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form: AuthenticationForm) -> HttpResponse:
-        """Autentica via `LoginView` e acrescenta a mensagem de boas-vindas.
+        """Autentica via ``LoginView`` e acrescenta a mensagem de boas-vindas.
 
         Args:
-            form (AuthenticationForm): formulário já validado pelo `LoginView`.
+            form (AuthenticationForm): formulário já validado pelo ``LoginView``.
 
         Returns:
-            HttpResponse: redireciona para `?next=` ou `LOGIN_REDIRECT_URL`.
+            HttpResponse: redireciona para ``?next=`` ou ``LOGIN_REDIRECT_URL``.
         """
         resposta = super().form_valid(form)
         messages.success(
@@ -107,11 +107,11 @@ class SairView(LogoutView):
 
         Args:
             request (HttpRequest): requisição POST recebida.
-            *args (object): argumentos posicionais repassados ao `super().post()`.
-            **kwargs (object): argumentos nomeados repassados ao `super().post()`.
+            *args (object): argumentos posicionais repassados ao ``super().post()``.
+            **kwargs (object): argumentos nomeados repassados ao ``super().post()``.
 
         Returns:
-            HttpResponse: redireciona para `next_page`.
+            HttpResponse: redireciona para ``next_page``.
         """
         messages.info(request, "Você saiu da sua conta.")
         return super().post(request, *args, **kwargs)

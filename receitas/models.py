@@ -40,7 +40,14 @@ def validar_tamanho_imagem(arquivo: models.fields.files.FieldFile) -> None:
 
 
 class Categoria(models.Model):
-    """Agrupamento temático de receitas (ex.: Sobremesas, Massas, Veganas)."""
+    """Agrupamento temático de receitas (ex.: Sobremesas, Massas, Veganas).
+
+    Attributes:
+        nome (str): Nome de exibição, não único (RF-01) — duas categorias
+            podem se chamar igual e ainda receber slugs distintos.
+        slug (str): Slug gerado automaticamente a partir do ``nome`` no
+            primeiro ``save()`` quando não fornecido; único no banco.
+    """
 
     # unique fica no slug, não no nome (RF-01): duas categorias podem ter o
     # mesmo nome de exibição e ainda assim receber slugs distintos.
@@ -52,8 +59,9 @@ class Categoria(models.Model):
         ordering = ["nome"]
 
     def __str__(self) -> str:
-        """Returns:
-        str: o nome da categoria.
+        """
+        Returns:
+            str: o nome da categoria.
         """
         return self.nome
 
@@ -74,7 +82,14 @@ class Categoria(models.Model):
 
 
 class Tag(models.Model):
-    """Rótulo livre para filtrar receitas por característica (ex.: "sem glúten")."""
+    """Rótulo livre para filtrar receitas por característica (ex.: "sem glúten").
+
+    Attributes:
+        nome (str): Nome de exibição, não único — mesma razão de
+            ``Categoria.nome`` (RF-02).
+        slug (str): Slug gerado automaticamente a partir do ``nome`` no
+            primeiro ``save()`` quando não fornecido; único no banco.
+    """
 
     # unique fica no slug, não no nome — mesma razão de Categoria (RF-02).
     nome = models.CharField(max_length=40)
@@ -84,8 +99,9 @@ class Tag(models.Model):
         ordering = ["nome"]
 
     def __str__(self) -> str:
-        """Returns:
-        str: o nome da tag.
+        """
+        Returns:
+            str: o nome da tag.
         """
         return self.nome
 
@@ -108,14 +124,30 @@ class Tag(models.Model):
 class Receita(models.Model):
     """Uma receita publicável: ingredientes, modo de preparo e metadados.
 
+    O slug é gerado automaticamente a partir do título no primeiro
+    ``save()`` quando não fornecido.
+
     Attributes:
+        titulo (str): Título da receita.
+        slug (str): Slug único gerado a partir do ``titulo``.
+        resumo (str): Resumo curto exibido no cartão da listagem.
+        ingredientes (str): Lista de ingredientes em texto livre.
+        modo_de_preparo (str): Passo a passo do preparo em texto livre.
+        tempo_preparo_minutos (int): Tempo estimado de preparo, em minutos.
+        porcoes (int): Número de porções que a receita rende.
+        imagem_capa (ImageFieldFile): Imagem de capa opcional, validada por
+            extensão (jpg/jpeg/png/webp) e tamanho máximo de 5 MB.
         categoria (Categoria): ``on_delete=PROTECT`` — não é permitido
             apagar uma categoria em uso (ADR-2 trata só do autor; aqui a
             regra é a oposta de propósito, ver spec 001 RF-03).
+        tags (ManyRelatedManager): Tags associadas à receita, opcionais.
         autor (User | None): ``on_delete=SET_NULL`` — remover o usuário não
             apaga o conteúdo da receita (ADR-2).
         publicado (bool): controla se a receita pode aparecer nas views
             públicas (a view em si é escopo da spec seguinte).
+        criado_em (datetime): Data/hora de criação (``auto_now_add``).
+        atualizado_em (datetime): Data/hora da última atualização
+            (``auto_now``).
     """
 
     titulo = models.CharField(max_length=140)
@@ -154,8 +186,9 @@ class Receita(models.Model):
         ordering = ["-criado_em"]
 
     def __str__(self) -> str:
-        """Returns:
-        str: o título da receita.
+        """
+        Returns:
+            str: o título da receita.
         """
         return self.titulo
 
@@ -184,8 +217,10 @@ class Comentario(models.Model):
         autor (User | None): ``on_delete=SET_NULL`` — mesma política de
             ``Receita.autor`` (spec 001, ADR-2): preserva o comentário
             mesmo se o usuário for removido.
+        texto (str): Conteúdo do comentário em texto livre.
         aprovado (bool): moderação reativa — nasce ``True``, o admin
             desmarca para esconder sem apagar (spec 005, ADR-4).
+        criado_em (datetime): Data/hora de criação (``auto_now_add``).
     """
 
     receita = models.ForeignKey(
@@ -208,7 +243,8 @@ class Comentario(models.Model):
         ordering = ["criado_em"]  # conversa cronológica: mais antigo primeiro
 
     def __str__(self) -> str:
-        """Returns:
-        str: identificação curta do comentário (autor + receita).
+        """
+        Returns:
+            str: identificação curta do comentário (autor + receita).
         """
         return f"Comentário de {self.autor} em {self.receita}"

@@ -1,10 +1,10 @@
 """
-ASGI config for blog_culinario project.
+Ponto de entrada ASGI do projeto Blog Culinário.
 
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/6.1/howto/deployment/asgi/
+Expõe o callable ASGI na variável de módulo ``application``, utilizada por
+servidores compatíveis com ASGI. Não usado no deploy atual (PythonAnywhere
+roda WSGI, ver ``wsgi.py``) — mantido pelo scaffold padrão do Django para o
+projeto poder migrar para um servidor ASGI sem retrabalho.
 """
 
 import os

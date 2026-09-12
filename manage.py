@@ -1,12 +1,21 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+"""Utilitário de linha de comando do Django para tarefas administrativas.
+
+Ponto de entrada para todos os management commands do projeto:
+    python manage.py runserver
+    python manage.py migrate
+    python manage.py createsuperuser
+    (entre outros)
+"""
+
+from __future__ import annotations
 
 import os
 import sys
 
 
-def main():
-    """Run administrative tasks."""
+def main() -> None:
+    """Configura o módulo de settings padrão e executa o comando recebido."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "blog_culinario.settings.dev")
     try:
         from django.core.management import execute_from_command_line

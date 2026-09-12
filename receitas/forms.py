@@ -29,8 +29,8 @@ def gerar_carimbo_de_tempo() -> str:
     como campo hidden e volta no POST correspondente.
 
     Returns:
-        str: o timestamp atual (`time.time()`), assinado via
-        `django.core.signing`.
+        str: o timestamp atual (``time.time()``), assinado via
+        ``django.core.signing``.
     """
     return signing.dumps(time.time(), salt=_ASSINATURA_SALT)
 
@@ -38,18 +38,18 @@ def gerar_carimbo_de_tempo() -> str:
 def eh_envio_suspeito_de_bot(dados: QueryDict) -> bool:
     """Detecta honeypot preenchido ou time-trap disparado (spec 007).
 
-    Lê `request.POST` diretamente, antes de qualquer validação do
-    `FormularioComentario` -- um honeypot preenchido deve ser rejeitado
-    mesmo que o resto do envio (`texto`) seja inválido (ADR-3).
+    Lê ``request.POST`` diretamente, antes de qualquer validação do
+    ``FormularioComentario`` -- um honeypot preenchido deve ser rejeitado
+    mesmo que o resto do envio (``texto``) seja inválido (ADR-3).
 
     Args:
-        dados (QueryDict): `request.POST` do envio do formulário de
+        dados (QueryDict): ``request.POST`` do envio do formulário de
             comentário.
 
     Returns:
-        bool: True se `endereco_web` (o honeypot) veio não-vazio, ou se
-        `carimbo_tempo` está ausente/adulterado ou indica um envio mais
-        rápido que `_TEMPO_MINIMO_SEGUNDOS` (RF-01, RF-02).
+        bool: True se ``endereco_web`` (o honeypot) veio não-vazio, ou se
+        ``carimbo_tempo`` está ausente/adulterado ou indica um envio mais
+        rápido que ``_TEMPO_MINIMO_SEGUNDOS`` (RF-01, RF-02).
     """
     if dados.get("endereco_web", "").strip():
         return True
@@ -70,8 +70,8 @@ class FormularioComentario(forms.ModelForm):
     ``receita`` e ``autor`` são preenchidos pela view a partir da URL e do
     usuário autenticado — não fazem parte do formulário. ``endereco_web``
     e ``carimbo_tempo`` também não são campos do modelo — existem só para
-    `eh_envio_suspeito_de_bot()` (spec 007); `form.save()` os ignora
-    automaticamente por não estarem em `Meta.fields`.
+    ``eh_envio_suspeito_de_bot()`` (spec 007); ``form.save()`` os ignora
+    automaticamente por não estarem em ``Meta.fields``.
     """
 
     # Honeypot (RF-01): campo de texto real, oculto só por CSS
@@ -101,14 +101,14 @@ class FormularioComentario(forms.ModelForm):
 
         ``TextField`` sem ``blank=False`` já rejeita string vazia, mas uma
         string só de espaços passa pela validação padrão do Django (é
-        "verdadeira") — daí o `.strip()` explícito aqui.
+        "verdadeira") — daí o ``.strip()`` explícito aqui.
 
         Returns:
             str: o texto já sem espaços nas pontas.
 
         Raises:
             django.core.exceptions.ValidationError: se o texto, após
-                `.strip()`, ficar vazio.
+                ``.strip()``, ficar vazio.
         """
         texto = self.cleaned_data["texto"].strip()
         if not texto:

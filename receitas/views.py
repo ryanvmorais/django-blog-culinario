@@ -75,7 +75,7 @@ class ReceitaListView(ListView):
         return queryset
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        """Expõe os filtros ativos e a querystring sem `page` (RF-06, RF-07, ADR-3).
+        """Expõe os filtros ativos e a querystring sem ``page`` (RF-06, RF-07, ADR-3).
 
         Args:
             **kwargs (Any): argumentos repassados ao ``super().get_context_data()``.
@@ -157,15 +157,15 @@ class ComentarioCreateView(LoginRequiredMixin, View):
     http_method_names = ["post"]
 
     def handle_no_permission(self) -> HttpResponseRedirect:
-        """Redireciona ao login com `next` apontando para a receita (ADR-2).
+        """Redireciona ao login com ``next`` apontando para a receita (ADR-2).
 
-        O padrão do `LoginRequiredMixin` usaria a URL desta própria view
-        como `next` — mas ela só aceita POST, então o `GET` que o
+        O padrão do ``LoginRequiredMixin`` usaria a URL desta própria view
+        como ``next`` — mas ela só aceita POST, então o ``GET`` que o
         navegador faz após o login bateria num 405. Aponta direto para a
         página da receita, que é aonde o usuário queria chegar.
 
         Returns:
-            HttpResponseRedirect: redirecionamento para `usuarios:entrar`.
+            HttpResponseRedirect: redirecionamento para ``usuarios:entrar``.
         """
         url_receita = reverse("receitas:detalhe", kwargs={"slug": self.kwargs["slug"]})
         return redirect_to_login(
@@ -186,8 +186,8 @@ class ComentarioCreateView(LoginRequiredMixin, View):
             slug (str): slug da receita comentada, vindo da URL.
 
         Returns:
-            HttpResponse: redireciona de volta para `receitas:detalhe`,
-            na âncora `#comentarios`.
+            HttpResponse: redireciona de volta para ``receitas:detalhe``,
+            na âncora ``#comentarios``.
         """
         url_receita = reverse("receitas:detalhe", kwargs={"slug": slug})
         url_retorno = f"{url_receita}#comentarios"
