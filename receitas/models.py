@@ -1,0 +1,174 @@
+"""
+Domínio de receitas: Categoria, Tag e Receita (spec 001).
+
+Só o modelo de dados e a geração de slug — views/templates públicos e busca
+são escopo das specs seguintes (ver specs/README.md).
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
+from django.db import models
+
+from .utils import gerar_slug_unico
+
+# Limite de upload da imagem de capa (RF-04) — evita que uma foto de celular
+# sem compressão vá parar direto em media/ sem controle de tamanho.
+_TAMANHO_MAXIMO_IMAGEM = 5 * 1024 * 1024  # 5 MB
+
+
+def validar_tamanho_imagem(arquivo: models.fields.files.FieldFile) -> None:
+    """Rejeita arquivos de imagem acima de ``_TAMANHO_MAXIMO_IMAGEM``.
+
+    Args:
+        arquivo (FieldFile): arquivo enviado ao campo ``imagem_capa``.
+
+    Returns:
+        None
+
+    Raises:
+        django.core.exceptions.ValidationError: se ``arquivo.size`` exceder
+            o limite de 5 MB.
+    """
+    if arquivo.size > _TAMANHO_MAXIMO_IMAGEM:
+        raise ValidationError("A imagem deve ter no máximo 5 MB.")
+
+
+class Categoria(models.Model):
+    """Agrupamento temático de receitas (ex.: Sobremesas, Massas, Veganas)."""
+
+    # unique fica no slug, não no nome (RF-01): duas categorias podem ter o
+    # mesmo nome de exibição e ainda assim receber slugs distintos.
+    nome = models.CharField(max_length=80)
+    slug = models.SlugField(max_length=90, unique=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "categorias"
+        ordering = ["nome"]
+
+    def __str__(self) -> str:
+        """Returns:
+        str: o nome da categoria.
+        """
+        return self.nome
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        """Salva a categoria, gerando um slug único a partir do nome quando vazio.
+
+        Args:
+            *args (Any): argumentos posicionais repassados ao ``super().save()``
+                (``force_insert``, ``force_update``, ...).
+            **kwargs (Any): argumentos nomeados repassados ao ``super().save()``.
+
+        Returns:
+            None
+        """
+        if not self.slug:
+            self.slug = gerar_slug_unico(Categoria, self.nome)
+        super().save(*args, **kwargs)
+
+
+class Tag(models.Model):
+    """Rótulo livre para filtrar receitas por característica (ex.: "sem glúten")."""
+
+    # unique fica no slug, não no nome — mesma razão de Categoria (RF-02).
+    nome = models.CharField(max_length=40)
+    slug = models.SlugField(max_length=50, unique=True, blank=True)
+
+    class Meta:
+        ordering = ["nome"]
+
+    def __str__(self) -> str:
+        """Returns:
+        str: o nome da tag.
+        """
+        return self.nome
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        """Salva a tag, gerando um slug único a partir do nome quando vazio.
+
+        Args:
+            *args (Any): argumentos posicionais repassados ao ``super().save()``
+                (``force_insert``, ``force_update``, ...).
+            **kwargs (Any): argumentos nomeados repassados ao ``super().save()``.
+
+        Returns:
+            None
+        """
+        if not self.slug:
+            self.slug = gerar_slug_unico(Tag, self.nome)
+        super().save(*args, **kwargs)
+
+
+class Receita(models.Model):
+    """Uma receita publicável: ingredientes, modo de preparo e metadados.
+
+    Attributes:
+        categoria (Categoria): ``on_delete=PROTECT`` — não é permitido
+            apagar uma categoria em uso (ADR-2 trata só do autor; aqui a
+            regra é a oposta de propósito, ver spec 001 RF-03).
+        autor (User | None): ``on_delete=SET_NULL`` — remover o usuário não
+            apaga o conteúdo da receita (ADR-2).
+        publicado (bool): controla se a receita pode aparecer nas views
+            públicas (a view em si é escopo da spec seguinte).
+    """
+
+    titulo = models.CharField(max_length=140)
+    slug = models.SlugField(max_length=160, unique=True, blank=True)
+    resumo = models.CharField(max_length=280)
+    ingredientes = models.TextField()
+    modo_de_preparo = models.TextField()
+    tempo_preparo_minutos = models.PositiveIntegerField()
+    porcoes = models.PositiveSmallIntegerField()
+    imagem_capa = models.ImageField(
+        upload_to="receitas/capas/%Y/%m/",
+        blank=True,
+        validators=[
+            FileExtensionValidator(["jpg", "jpeg", "png", "webp"]),
+            validar_tamanho_imagem,
+        ],
+    )
+    categoria = models.ForeignKey(
+        Categoria,
+        on_delete=models.PROTECT,
+        related_name="receitas",
+    )
+    tags = models.ManyToManyField(Tag, related_name="receitas", blank=True)
+    autor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="receitas",
+    )
+    publicado = models.BooleanField(default=False)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-criado_em"]
+
+    def __str__(self) -> str:
+        """Returns:
+        str: o título da receita.
+        """
+        return self.titulo
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        """Salva a receita, gerando um slug único a partir do título quando vazio.
+
+        Args:
+            *args (Any): argumentos posicionais repassados ao ``super().save()``
+                (``force_insert``, ``force_update``, ...).
+            **kwargs (Any): argumentos nomeados repassados ao ``super().save()``.
+
+        Returns:
+            None
+        """
+        if not self.slug:
+            self.slug = gerar_slug_unico(Receita, self.titulo)
+        super().save(*args, **kwargs)

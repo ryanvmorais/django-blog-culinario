@@ -13,6 +13,3 @@ from .base import *  # noqa: F403 — reexporta as configurações compartilhada
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-
-# Emails (ex.: confirmação de cadastro) só aparecem no console, sem SMTP real.
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

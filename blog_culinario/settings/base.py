@@ -135,3 +135,14 @@ STATIC_ROOT = BASE_DIR / "staticfiles"  # destino do collectstatic (gitignored)
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"  # uploads de imagens das receitas (gitignored)
+
+
+# ---------------------------------------------------------------------------
+# Email
+# ---------------------------------------------------------------------------
+
+# Console por padrão (nenhum requisito ainda envia email de verdade). Um
+# projeto futuro com SMTP real sobrescreve isto em settings/prod.py.
+MAILERS = {
+    "default": {"BACKEND": "django.core.mail.backends.console.EmailBackend"},
+}

@@ -39,6 +39,9 @@ exclude = ["**/migrations/*.py"]  # geradas pelo Django, não seguem o estilo do
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "C4", "RUF"]  # pyflakes+pycodestyle, isort, pyupgrade, bugbear, simplify, comprehensions, ruff-native
+ignore = [
+    "RUF012",  # list/dict em ModelAdmin e Model.Meta são a convenção do próprio Django, não um bug
+]
 
 [tool.ruff.lint.isort]
 known-first-party = ["blog_culinario", "nucleo", "receitas", "usuarios"]
