@@ -53,7 +53,24 @@ Nenhuma fase avança sem o "ok" explícito do Ryan. Comandos: `/spec nova <nome>
 
 ## Notas de manutenção
 
-Nenhuma ainda — este é o início do projeto.
+- **`Categoria.nome`/`Tag.nome` não são únicos — só o `slug` é.** Não
+  reintroduza `unique=True` em `nome`: isso quebraria RF-01/RF-02 da spec
+  001 (duas categorias podem ter o mesmo nome de exibição, distintas pelo
+  slug). Ver `001-modelagem-receitas/design.md`.
+- **Prettier quebra tags do Django que acabam com quebra de linha no
+  meio** (ex.: `{% include\n  "..." %}`) — o lexer de template do Django
+  não reconhece uma tag `{% ... %}` multi-linha. O `.prettierignore` na
+  raiz do projeto impede o Prettier de tocar `templates/`; não remova essa
+  regra. Ver `007-honeypot-e-time-trap/tasks.md` (correção feita durante a
+  implementação).
+- **`{# ... #}` do Django só funciona numa linha só.** Um comentário de
+  template multi-linha precisa de `{% comment %}...{% endcomment %}` —
+  senão o texto do "comentário" vaza pra página renderizada.
+- **Ordem de checagem em `ComentarioCreateView.post()` importa.**
+  Honeypot/time-trap (spec 007) roda antes do limite de taxa (spec 006),
+  que roda antes da busca da receita — nessa ordem, para um envio filtrado
+  por bot não consumir o orçamento de comentários por IP (spec 007,
+  RNF-03/ADR-3). Não reordene sem revisar as duas specs.
 
 ## Spec-ouro
 
