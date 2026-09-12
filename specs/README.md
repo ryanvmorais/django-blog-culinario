@@ -42,6 +42,7 @@ Nenhuma fase avança sem o "ok" explícito do Ryan. Comandos: `/spec nova <nome>
 
 | Spec | Escopo | Status |
 |---|---|---|
+| [000-fundacao](000-fundacao/requirements.md) | Bootstrap: repositório, projeto Django, design system, documentação (engenharia reversa) | concluído |
 | [001-modelagem-receitas](001-modelagem-receitas/requirements.md) | Modelos `Categoria`, `Receita`, `Tag` + admin | concluído |
 | [002-listagem-detalhe-receitas](002-listagem-detalhe-receitas/requirements.md) | Views públicas: listagem paginada + detalhe de receita | concluído |
 | [003-busca-e-filtros](003-busca-e-filtros/requirements.md) | Busca textual + filtro por categoria/tag na listagem | concluído |
@@ -55,4 +56,11 @@ Nenhuma ainda — este é o início do projeto.
 ## Spec-ouro
 
 [001-modelagem-receitas](001-modelagem-receitas/) — primeira spec concluída
-do projeto; use como referência de formato e de nível de detalhe.
+do projeto; use como referência de formato e de nível de detalhe para
+specs de **concepção** (feature nova, requisitos escritos antes do código).
+
+[000-fundacao](000-fundacao/) é diferente de propósito: é
+**engenharia reversa** do bootstrap do projeto (repositório, Django,
+design system, documentação), registrado depois do fato para preservar o
+histórico de como o projeto nasceu — não é o modelo a seguir para uma
+feature nova.
