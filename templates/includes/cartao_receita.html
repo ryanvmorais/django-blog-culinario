@@ -3,7 +3,12 @@
 <article class="cartao-receita">
   <a href="{% url 'receitas:detalhe' receita.slug %}">
     {% if receita.imagem_capa %}
-      <img class="cartao-receita__imagem" src="{{ receita.imagem_capa.url }}" alt="{{ receita.titulo }}" />
+      <img
+        class="cartao-receita__imagem"
+        src="{{ receita.imagem_capa.url }}"
+        alt="{{ receita.titulo }}"
+        loading="lazy"
+      />
     {% else %}
       <div class="cartao-receita__imagem" aria-hidden="true"></div>
     {% endif %}
