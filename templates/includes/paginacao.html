@@ -1,15 +1,20 @@
 {# Controles anterior/próxima para qualquer ListView paginada (spec 002, RF-02). #}
-{# Espera `page_obj` no contexto (padrão do Django quando paginate_by está definido). #}
+{# Espera `page_obj` no contexto; `querystring` (GET sem `page`) é opcional #}
+{# e preserva filtros ativos ao paginar (spec 003, RF-06). #}
 {% if page_obj.has_other_pages %}
   <nav class="paginacao container" aria-label="Paginação de receitas">
     {% if page_obj.has_previous %}
-      <a class="botao botao--contorno" href="?page={{ page_obj.previous_page_number }}">&larr; Anterior</a>
+      <a class="botao botao--contorno" href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">
+        &larr; Anterior
+      </a>
     {% endif %}
 
     <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
 
     {% if page_obj.has_next %}
-      <a class="botao botao--contorno" href="?page={{ page_obj.next_page_number }}">Próxima &rarr;</a>
+      <a class="botao botao--contorno" href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">
+        Próxima &rarr;
+      </a>
     {% endif %}
   </nav>
 {% endif %}

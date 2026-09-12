@@ -7,6 +7,24 @@
   <section class="container cabecalho-pagina">
     <h1>Receitas</h1>
     <p>Todas as receitas publicadas, da mais recente para a mais antiga.</p>
+
+    <form class="formulario-busca" method="get" role="search">
+      <label for="campo-busca">Buscar por título ou ingrediente</label>
+      <input
+        type="search"
+        id="campo-busca"
+        name="q"
+        value="{{ termo_busca }}"
+        placeholder="Ex.: cenoura"
+      />
+      {% if categoria_selecionada %}
+        <input type="hidden" name="categoria" value="{{ categoria_selecionada }}" />
+      {% endif %}
+      {% if tag_selecionada %}
+        <input type="hidden" name="tag" value="{{ tag_selecionada }}" />
+      {% endif %}
+      <button type="submit" class="botao botao--primario">Buscar</button>
+    </form>
   </section>
 
   <section class="container">
@@ -16,6 +34,12 @@
           {% include "includes/cartao_receita.html" %}
         {% endfor %}
       </div>
+    {% elif termo_busca or categoria_selecionada or tag_selecionada %}
+      <p>
+        Nenhuma receita encontrada
+        {% if termo_busca %}para "{{ termo_busca }}"{% endif %}.
+        <a href="{% url 'receitas:lista' %}">Ver todas as receitas</a>
+      </p>
     {% else %}
       <p>Nenhuma receita publicada ainda — volte em breve.</p>
     {% endif %}

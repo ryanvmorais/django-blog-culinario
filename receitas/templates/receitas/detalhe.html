@@ -10,7 +10,9 @@
       <img class="receita-detalhe__capa" src="{{ receita.imagem_capa.url }}" alt="{{ receita.titulo }}" />
     {% endif %}
 
-    <span class="cartao-receita__categoria">{{ receita.categoria.nome }}</span>
+    <a class="cartao-receita__categoria" href="{% url 'receitas:lista' %}?categoria={{ receita.categoria.slug }}">
+      {{ receita.categoria.nome }}
+    </a>
     <h1>{{ receita.titulo }}</h1>
     <p>{{ receita.resumo }}</p>
 
@@ -27,7 +29,7 @@
     {% if receita.tags.all %}
       <ul class="etiquetas">
         {% for tag in receita.tags.all %}
-          <li class="etiqueta">{{ tag.nome }}</li>
+          <li><a class="etiqueta" href="{% url 'receitas:lista' %}?tag={{ tag.slug }}">{{ tag.nome }}</a></li>
         {% endfor %}
       </ul>
     {% endif %}

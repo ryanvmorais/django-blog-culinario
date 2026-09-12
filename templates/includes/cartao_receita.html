@@ -9,7 +9,9 @@
     {% endif %}
   </a>
   <div class="cartao-receita__corpo">
-    <span class="cartao-receita__categoria">{{ receita.categoria.nome }}</span>
+    <a class="cartao-receita__categoria" href="{% url 'receitas:lista' %}?categoria={{ receita.categoria.slug }}">
+      {{ receita.categoria.nome }}
+    </a>
     <h3 class="cartao-receita__titulo">
       <a href="{% url 'receitas:detalhe' receita.slug %}">{{ receita.titulo }}</a>
     </h3>

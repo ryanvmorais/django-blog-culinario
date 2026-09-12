@@ -263,6 +263,125 @@ def test_listagem_nao_tem_n_mais_1_com_tags(
 
 
 # -----------------------------------------------------------------------------
+# Busca e filtros (RF-01 a RF-06, RNF-02)
+# -----------------------------------------------------------------------------
+def test_busca_por_titulo_encontra_receita(client: Client) -> None:
+    receita = _receita(titulo="Bolo de cenoura", publicado=True)
+
+    resposta = client.get(reverse("receitas:lista"), {"q": "cenoura"})
+
+    assert receita.titulo in [r.titulo for r in resposta.context["receitas"]]
+
+
+def test_busca_por_ingrediente_encontra_receita(client: Client) -> None:
+    """ "cenoura" só aparece em `ingredientes`, não no título (RF-01)."""
+    receita = _receita(
+        titulo="Bolo simples", ingredientes="2 cenouras\n1 ovo", publicado=True
+    )
+
+    resposta = client.get(reverse("receitas:lista"), {"q": "cenoura"})
+
+    assert receita.titulo in [r.titulo for r in resposta.context["receitas"]]
+
+
+def test_busca_sem_correspondencia_nao_encontra_nada(client: Client) -> None:
+    _receita(titulo="Bolo de cenoura", publicado=True)
+
+    resposta = client.get(reverse("receitas:lista"), {"q": "abobora"})
+
+    assert list(resposta.context["receitas"]) == []
+
+
+def test_filtro_por_categoria_existente(client: Client) -> None:
+    sobremesas = _categoria(nome="Sobremesas")
+    massas = _categoria(nome="Massas")
+    receita_sobremesa = _receita(titulo="Bolo", categoria=sobremesas, publicado=True)
+    _receita(titulo="Lasanha", categoria=massas, publicado=True)
+
+    resposta = client.get(reverse("receitas:lista"), {"categoria": sobremesas.slug})
+
+    titulos = [r.titulo for r in resposta.context["receitas"]]
+    assert titulos == [receita_sobremesa.titulo]
+
+
+def test_filtro_por_categoria_inexistente_retorna_lista_vazia(client: Client) -> None:
+    """Slug sem correspondência é resultado vazio, não erro (RNF-02)."""
+    _receita(publicado=True)
+
+    resposta = client.get(reverse("receitas:lista"), {"categoria": "nao-existe"})
+
+    assert resposta.status_code == 200
+    assert list(resposta.context["receitas"]) == []
+
+
+def test_filtro_por_tag_existente(client: Client) -> None:
+    tag_vegana = _tag(nome="vegana")
+    com_tag = _receita(titulo="Receita vegana", publicado=True)
+    com_tag.tags.add(tag_vegana)
+    _receita(titulo="Receita comum", publicado=True)
+
+    resposta = client.get(reverse("receitas:lista"), {"tag": tag_vegana.slug})
+
+    titulos = [r.titulo for r in resposta.context["receitas"]]
+    assert titulos == [com_tag.titulo]
+
+
+def test_filtro_por_tag_inexistente_retorna_lista_vazia(client: Client) -> None:
+    _receita(publicado=True)
+
+    resposta = client.get(reverse("receitas:lista"), {"tag": "nao-existe"})
+
+    assert resposta.status_code == 200
+    assert list(resposta.context["receitas"]) == []
+
+
+def test_busca_e_categoria_combinam_com_e_logico(client: Client) -> None:
+    """Busca + categoria aplicam interseção, não união (RF-04)."""
+    sobremesas = _categoria(nome="Sobremesas")
+    massas = _categoria(nome="Massas")
+    # ingredientes explícitos: o default do builder já contém "cenoura",
+    # o que contaminaria justamente o cenário que este teste quer excluir.
+    alvo = _receita(titulo="Bolo de cenoura", categoria=sobremesas, publicado=True)
+    _receita(
+        titulo="Lasanha de cenoura",
+        categoria=massas,
+        ingredientes="massa, molho, queijo",
+        publicado=True,
+    )
+    _receita(
+        titulo="Bolo de chocolate",
+        categoria=sobremesas,
+        ingredientes="chocolate, farinha, ovos",
+        publicado=True,
+    )
+
+    resposta = client.get(
+        reverse("receitas:lista"), {"q": "cenoura", "categoria": sobremesas.slug}
+    )
+
+    titulos = [r.titulo for r in resposta.context["receitas"]]
+    assert titulos == [alvo.titulo]
+
+
+def test_estado_vazio_mostra_mensagem_com_termo_buscado(client: Client) -> None:
+    resposta = client.get(reverse("receitas:lista"), {"q": "abobora"})
+
+    assert "Nenhuma receita encontrada" in resposta.content.decode()
+    assert "abobora" in resposta.content.decode()
+
+
+def test_paginacao_preserva_filtro_de_categoria_na_querystring(client: Client) -> None:
+    categoria = _categoria()
+    for i in range(10):
+        _receita(titulo=f"Receita {i}", categoria=categoria, publicado=True)
+
+    resposta = client.get(reverse("receitas:lista"), {"categoria": categoria.slug})
+
+    conteudo = resposta.content.decode()
+    assert f"categoria={categoria.slug}" in conteudo
+
+
+# -----------------------------------------------------------------------------
 # Detalhe público (RF-03, RF-04)
 # -----------------------------------------------------------------------------
 def test_detalhe_receita_publicada_retorna_200_com_campos(client: Client) -> None:
