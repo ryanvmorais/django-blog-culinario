@@ -1,6 +1,6 @@
 """
-Views públicas de receitas: listagem paginada com busca/filtros, e detalhe
-(specs 002 e 003).
+Views públicas de receitas: listagem paginada com busca/filtros, detalhe
+(specs 002 e 003) e criação de comentário (spec 005).
 
 Class-based views de propósito (ADR-1 da spec 002) — em contraste com as
 views baseadas em função de ``nucleo``, para o repositório mostrar os dois
@@ -11,9 +11,17 @@ from __future__ import annotations
 
 from typing import Any
 
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import redirect_to_login
 from django.db.models import Q, QuerySet
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+from django.views import View
 from django.views.generic import DetailView, ListView
 
+from .forms import FormularioComentario
 from .models import Receita
 
 
@@ -107,4 +115,74 @@ class ReceitaDetailView(DetailView):
             Receita.objects.filter(publicado=True)
             .select_related("categoria", "autor")
             .prefetch_related("tags")
+        )
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        """Acrescenta os comentários aprovados e o formulário de novo comentário.
+
+        Args:
+            **kwargs (Any): argumentos repassados ao ``super().get_context_data()``.
+
+        Returns:
+            dict[str, Any]: contexto do template, com ``comentarios``
+            (aprovados, mais antigo primeiro, autor pré-carregado — spec
+            005 RF-02, RNF-01) e ``formulario_comentario`` (vazio; só é
+            usado no template quando o visitante está autenticado).
+        """
+        contexto = super().get_context_data(**kwargs)
+        comentarios = self.object.comentarios.filter(aprovado=True)
+        contexto["comentarios"] = comentarios.select_related("autor")
+        contexto["formulario_comentario"] = FormularioComentario()
+        return contexto
+
+
+class ComentarioCreateView(LoginRequiredMixin, View):
+    """Cria um comentário numa receita publicada; só aceita POST.
+
+    O formulário vive embutido em ``receitas/detalhe.html`` (spec 005) —
+    não existe uma página própria para esta view, então ela nunca
+    responde a GET.
+    """
+
+    http_method_names = ["post"]
+
+    def handle_no_permission(self) -> HttpResponseRedirect:
+        """Redireciona ao login com `next` apontando para a receita (ADR-2).
+
+        O padrão do `LoginRequiredMixin` usaria a URL desta própria view
+        como `next` — mas ela só aceita POST, então o `GET` que o
+        navegador faz após o login bateria num 405. Aponta direto para a
+        página da receita, que é aonde o usuário queria chegar.
+
+        Returns:
+            HttpResponseRedirect: redirecionamento para `usuarios:entrar`.
+        """
+        url_receita = reverse("receitas:detalhe", kwargs={"slug": self.kwargs["slug"]})
+        return redirect_to_login(
+            url_receita, self.get_login_url(), self.get_redirect_field_name()
+        )
+
+    def post(self, request: HttpRequest, slug: str) -> HttpResponse:
+        """Valida e salva o comentário, ou volta com uma mensagem de erro (ADR-3).
+
+        Args:
+            request (HttpRequest): requisição POST recebida, já autenticada.
+            slug (str): slug da receita comentada, vindo da URL.
+
+        Returns:
+            HttpResponse: redireciona de volta para `receitas:detalhe`,
+            na âncora `#comentarios`.
+        """
+        receita = get_object_or_404(Receita, slug=slug, publicado=True)
+        form = FormularioComentario(request.POST)
+        if form.is_valid():
+            comentario = form.save(commit=False)
+            comentario.receita = receita
+            comentario.autor = request.user
+            comentario.save()
+            messages.success(request, "Comentário publicado!")
+        else:
+            messages.error(request, "O comentário não pode ficar vazio.")
+        return redirect(
+            reverse("receitas:detalhe", kwargs={"slug": slug}) + "#comentarios"
         )

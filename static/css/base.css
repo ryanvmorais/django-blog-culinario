@@ -315,6 +315,18 @@ ol {
   text-decoration: none; /* agora é um link (spec 003, RF-03) */
 }
 
+/* Lista de comentários da receita (spec 005). */
+.comentario {
+  padding-block: var(--espaco-4);
+  border-top: 1px solid var(--cor-borda);
+}
+
+.comentario__meta {
+  margin: 0 0 var(--espaco-1);
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+}
+
 
 /* 7. Botões e badges ------------------------------------------------------ */
 .botao {
@@ -375,7 +387,8 @@ ol {
   font-size: var(--texto-sm);
 }
 
-.formulario__campo input {
+.formulario__campo input,
+.formulario__campo textarea {
   padding: var(--espaco-3);
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio-md);
