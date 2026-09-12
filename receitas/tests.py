@@ -1,6 +1,6 @@
 """
-Testes do domínio de receitas: models (spec 001) e views públicas de
-listagem/detalhe (spec 002).
+Testes do domínio de receitas: models (spec 001), views públicas de
+listagem/detalhe (spec 002) e comentários (spec 005).
 
 Estratégia de isolamento: tudo aqui é ORM/HTTP de teste do Django rodando
 contra o banco de teste do pytest-django (`@pytest.mark.django_db`) — sem
@@ -11,6 +11,7 @@ upload de imagem usa `SimpleUploadedFile` em memória.
 from __future__ import annotations
 
 from typing import Any
+from uuid import uuid4
 
 import pytest
 from django.contrib.auth import get_user_model
@@ -20,7 +21,7 @@ from django.db.models.deletion import ProtectedError
 from django.test import Client
 from django.urls import reverse
 
-from .models import Categoria, Receita, Tag
+from .models import Categoria, Comentario, Receita, Tag
 
 pytestmark = pytest.mark.django_db
 
@@ -79,6 +80,35 @@ def _receita(**kwargs: Any) -> Receita:
     }
     dados.update(kwargs)
     return Receita.objects.create(**dados)
+
+
+def _comentario(**kwargs: Any) -> Comentario:
+    """Cria um Comentario mínimo válido, sobrescrevível por teste.
+
+    Args:
+        **kwargs (Any): campos que sobrescrevem o default (``receita``,
+            ``autor``, ``texto``, ``aprovado``, etc.).
+
+    Returns:
+        Comentario: instância já persistida.
+    """
+    # "autor" in kwargs (mesmo que None) é diferente de "não informado" —
+    # precisa distinguir pra permitir testar comentário sem autor.
+    if "autor" in kwargs:
+        autor = kwargs.pop("autor")
+    else:
+        # username único por chamada — testes que criam vários comentários
+        # sem passar autor não podem colidir no username.
+        autor = User.objects.create_user(
+            username=f"comentarista-{uuid4().hex[:8]}", password="senha-forte-123"
+        )
+    dados: dict[str, Any] = {
+        "receita": kwargs.pop("receita", None) or _receita(publicado=True),
+        "autor": autor,
+        "texto": "Ficou ótimo, testei e aprovei!",
+    }
+    dados.update(kwargs)
+    return Comentario.objects.create(**dados)
 
 
 # -----------------------------------------------------------------------------
@@ -416,3 +446,197 @@ def test_detalhe_sem_autor_nao_quebra(client: Client) -> None:
 
     assert resposta.status_code == 200
     assert "Autor removido" in resposta.content.decode()
+
+
+# -----------------------------------------------------------------------------
+# Modelo Comentario (RF-01)
+# -----------------------------------------------------------------------------
+def test_comentario_criado_com_os_campos_esperados() -> None:
+    comentario = _comentario(texto="Muito bom!")
+
+    assert comentario.aprovado is True
+    assert comentario.criado_em is not None
+    assert comentario.texto == "Muito bom!"
+
+
+def test_excluir_receita_apaga_os_comentarios() -> None:
+    """`on_delete=CASCADE`: comentário não sobrevive sem a receita (RF-01)."""
+    receita = _receita(publicado=True)
+    comentario = _comentario(receita=receita)
+
+    receita.delete()
+
+    assert not Comentario.objects.filter(pk=comentario.pk).exists()
+
+
+def test_excluir_autor_do_comentario_preserva_o_comentario() -> None:
+    """`on_delete=SET_NULL`, mesma política de `Receita.autor` (RF-01)."""
+    autor = User.objects.create_user(
+        username="comentarista", password="senha-forte-123"
+    )
+    comentario = _comentario(autor=autor)
+
+    autor.delete()
+
+    comentario.refresh_from_db()
+    assert comentario.autor is None
+
+
+# -----------------------------------------------------------------------------
+# Exibição de comentários (RF-02)
+# -----------------------------------------------------------------------------
+def test_comentario_aprovado_aparece_na_pagina(client: Client) -> None:
+    receita = _receita(publicado=True)
+    comentario = _comentario(receita=receita, texto="Comentário visível")
+
+    resposta = client.get(reverse("receitas:detalhe", kwargs={"slug": receita.slug}))
+
+    assert comentario.texto in resposta.content.decode()
+
+
+def test_comentarios_aparecem_do_mais_antigo_ao_mais_novo(client: Client) -> None:
+    receita = _receita(publicado=True)
+    primeiro = _comentario(receita=receita, texto="Primeiro comentário")
+    segundo = _comentario(receita=receita, texto="Segundo comentário")
+
+    resposta = client.get(reverse("receitas:detalhe", kwargs={"slug": receita.slug}))
+
+    conteudo = resposta.content.decode()
+    assert conteudo.index(primeiro.texto) < conteudo.index(segundo.texto)
+
+
+def test_comentario_reprovado_nao_aparece_na_pagina(client: Client) -> None:
+    """Também cobre RF-07: desmarcar `aprovado` some com o comentário público."""
+    receita = _receita(publicado=True)
+    comentario = _comentario(
+        receita=receita, texto="Comentário escondido", aprovado=False
+    )
+
+    resposta = client.get(reverse("receitas:detalhe", kwargs={"slug": receita.slug}))
+
+    assert comentario.texto not in resposta.content.decode()
+
+
+def test_comentario_sem_autor_mostra_usuario_removido(client: Client) -> None:
+    receita = _receita(publicado=True)
+    _comentario(receita=receita, autor=None, texto="Comentário órfão")
+
+    resposta = client.get(reverse("receitas:detalhe", kwargs={"slug": receita.slug}))
+
+    assert "Usuário removido" in resposta.content.decode()
+
+
+# -----------------------------------------------------------------------------
+# Formulário condicional por autenticação (RF-03)
+# -----------------------------------------------------------------------------
+def test_formulario_de_comentario_aparece_para_autenticado(client: Client) -> None:
+    receita = _receita(publicado=True)
+    autor = User.objects.create_user(username="leitor", password="senha-forte-123")
+    client.force_login(autor)
+
+    resposta = client.get(reverse("receitas:detalhe", kwargs={"slug": receita.slug}))
+
+    assert 'name="texto"' in resposta.content.decode()
+
+
+def test_convite_de_login_aparece_para_anonimo(client: Client) -> None:
+    receita = _receita(publicado=True)
+
+    resposta = client.get(reverse("receitas:detalhe", kwargs={"slug": receita.slug}))
+
+    conteudo = resposta.content.decode()
+    assert 'name="texto"' not in conteudo
+    url_esperada = (
+        reverse("usuarios:entrar")
+        + "?next="
+        + reverse("receitas:detalhe", kwargs={"slug": receita.slug})
+    )
+    assert url_esperada in conteudo
+
+
+# -----------------------------------------------------------------------------
+# Criação de comentário (RF-04, RF-05)
+# -----------------------------------------------------------------------------
+def test_post_valido_cria_comentario_e_redireciona(client: Client) -> None:
+    receita = _receita(publicado=True)
+    autor = User.objects.create_user(username="leitor", password="senha-forte-123")
+    client.force_login(autor)
+
+    resposta = client.post(
+        reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+        {"texto": "Ficou incrível!"},
+        follow=True,
+    )
+
+    assert Comentario.objects.filter(receita=receita, texto="Ficou incrível!").exists()
+    assert "Comentário publicado!" in resposta.content.decode()
+
+
+def test_post_com_texto_vazio_nao_cria_comentario(client: Client) -> None:
+    receita = _receita(publicado=True)
+    autor = User.objects.create_user(username="leitor", password="senha-forte-123")
+    client.force_login(autor)
+
+    resposta = client.post(
+        reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+        {"texto": "   "},
+        follow=True,
+    )
+
+    assert not Comentario.objects.filter(receita=receita).exists()
+    assert "O comentário não pode ficar vazio." in resposta.content.decode()
+
+
+# -----------------------------------------------------------------------------
+# Login obrigatório para comentar (RF-06)
+# -----------------------------------------------------------------------------
+def test_post_anonimo_redireciona_para_login_com_next_da_receita(
+    client: Client,
+) -> None:
+    receita = _receita(publicado=True)
+
+    resposta = client.post(
+        reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+        {"texto": "Tentando comentar sem login"},
+    )
+
+    url_receita = reverse("receitas:detalhe", kwargs={"slug": receita.slug})
+    assert resposta.status_code == 302
+    assert resposta["Location"] == f"{reverse('usuarios:entrar')}?next={url_receita}"
+    assert not Comentario.objects.filter(receita=receita).exists()
+
+
+def test_login_apos_redirect_volta_para_a_receita(client: Client) -> None:
+    receita = _receita(publicado=True)
+    User.objects.create_user(username="leitor", password="senha-forte-123")
+
+    resposta_anonima = client.post(
+        reverse("receitas:comentar", kwargs={"slug": receita.slug}),
+        {"texto": "Tentando comentar sem login"},
+    )
+    resposta_login = client.post(
+        resposta_anonima["Location"],
+        {"username": "leitor", "password": "senha-forte-123"},
+    )
+
+    url_receita = reverse("receitas:detalhe", kwargs={"slug": receita.slug})
+    assert resposta_login.status_code == 302
+    assert resposta_login["Location"] == url_receita
+
+
+# -----------------------------------------------------------------------------
+# Moderação no admin (RF-07)
+# -----------------------------------------------------------------------------
+def test_listagem_do_admin_de_comentarios_responde_200(client: Client) -> None:
+    staff = User.objects.create_user(
+        username="admin-teste",
+        password="senha-forte-123",
+        is_staff=True,
+        is_superuser=True,
+    )
+    client.force_login(staff)
+    _comentario()
+
+    resposta = client.get("/admin/receitas/comentario/")
+
+    assert resposta.status_code == 200

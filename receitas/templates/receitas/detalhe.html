@@ -44,4 +44,42 @@
     <h2>Modo de preparo</h2>
     {{ receita.modo_de_preparo|linebreaks }}
   </article>
+
+  <!-- ============================================================
+       SEÇÃO: COMENTÁRIOS (spec 005)
+       Formulário só aparece autenticado; anônimo vê convite de login
+       com ?next= de volta pra esta mesma receita (ver ADR-2 da spec).
+       ============================================================ -->
+  <section class="container" id="comentarios">
+    <h2>Comentários</h2>
+
+    {% for comentario in comentarios %}
+      <article class="comentario">
+        <p class="comentario__meta">
+          {% if comentario.autor %}{{ comentario.autor.username }}{% else %}Usuário removido{% endif %}
+          &middot; {{ comentario.criado_em|naturaltime }}
+        </p>
+        <p>{{ comentario.texto }}</p>
+      </article>
+    {% empty %}
+      <p>Ainda não há comentários. Seja o primeiro a comentar!</p>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+      <form class="formulario" method="post" action="{% url 'receitas:comentar' receita.slug %}">
+        {% csrf_token %}
+        <div class="formulario__campo">
+          {{ formulario_comentario.texto.label_tag }}
+          {{ formulario_comentario.texto }}
+        </div>
+        <button type="submit" class="botao botao--primario">Comentar</button>
+      </form>
+    {% else %}
+      <p>
+        <a href="{% url 'usuarios:entrar' %}?next={% url 'receitas:detalhe' receita.slug %}">Entre</a>
+        para deixar um comentário.
+      </p>
+    {% endif %}
+  </section>
+  <!-- fim: COMENTÁRIOS -->
 {% endblock %}

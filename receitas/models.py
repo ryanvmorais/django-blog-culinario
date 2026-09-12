@@ -1,8 +1,9 @@
 """
-Domínio de receitas: Categoria, Tag e Receita (spec 001).
+Domínio de receitas: Categoria, Tag, Receita (spec 001) e Comentario
+(spec 005).
 
-Só o modelo de dados e a geração de slug — views/templates públicos e busca
-são escopo das specs seguintes (ver specs/README.md).
+Só o modelo de dados e a geração de slug — views/templates públicos, busca
+e moderação são escopo das specs seguintes (ver specs/README.md).
 """
 
 from __future__ import annotations
@@ -172,3 +173,42 @@ class Receita(models.Model):
         if not self.slug:
             self.slug = gerar_slug_unico(Receita, self.titulo)
         super().save(*args, **kwargs)
+
+
+class Comentario(models.Model):
+    """Comentário de um usuário autenticado numa receita.
+
+    Attributes:
+        receita (Receita): ``on_delete=CASCADE`` — comentário não
+            sobrevive sem a receita que comenta.
+        autor (User | None): ``on_delete=SET_NULL`` — mesma política de
+            ``Receita.autor`` (spec 001, ADR-2): preserva o comentário
+            mesmo se o usuário for removido.
+        aprovado (bool): moderação reativa — nasce ``True``, o admin
+            desmarca para esconder sem apagar (spec 005, ADR-4).
+    """
+
+    receita = models.ForeignKey(
+        Receita,
+        on_delete=models.CASCADE,
+        related_name="comentarios",
+    )
+    autor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="comentarios",
+    )
+    texto = models.TextField()
+    aprovado = models.BooleanField(default=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["criado_em"]  # conversa cronológica: mais antigo primeiro
+
+    def __str__(self) -> str:
+        """Returns:
+        str: identificação curta do comentário (autor + receita).
+        """
+        return f"Comentário de {self.autor} em {self.receita}"
