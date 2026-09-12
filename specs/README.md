@@ -43,6 +43,7 @@ Nenhuma fase avança sem o "ok" explícito do Ryan. Comandos: `/spec nova <nome>
 | Spec | Escopo | Status |
 |---|---|---|
 | [001-modelagem-receitas](001-modelagem-receitas/requirements.md) | Modelos `Categoria`, `Receita`, `Tag` + admin | concluído |
+| [002-listagem-detalhe-receitas](002-listagem-detalhe-receitas/requirements.md) | Views públicas: listagem paginada + detalhe de receita | concluído |
 
 ## Notas de manutenção
 
