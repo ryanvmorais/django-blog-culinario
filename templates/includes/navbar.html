@@ -10,9 +10,10 @@
     <a class="navbar__marca" href="{% url 'nucleo:home' %}">Blog Culinário</a>
 
     <nav aria-label="Navegação principal">
-      {# Receitas e Sobre entram quando as specs correspondentes forem implementadas. #}
+      {# Sobre entra quando a spec correspondente for implementada. #}
       <ul class="navbar__links" id="menu-principal">
         <li><a href="{% url 'nucleo:home' %}">Início</a></li>
+        <li><a href="{% url 'receitas:lista' %}">Receitas</a></li>
       </ul>
     </nav>
 

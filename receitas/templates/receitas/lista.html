@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block titulo %}Receitas — Blog Culinário{% endblock %}
+{% block descricao %}Todas as receitas publicadas no Blog Culinário, da mais recente para a mais antiga.{% endblock %}
+
+{% block content %}
+  <section class="container cabecalho-pagina">
+    <h1>Receitas</h1>
+    <p>Todas as receitas publicadas, da mais recente para a mais antiga.</p>
+  </section>
+
+  <section class="container">
+    {% if receitas %}
+      <div class="grade-receitas">
+        {% for receita in receitas %}
+          {% include "includes/cartao_receita.html" %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>Nenhuma receita publicada ainda — volte em breve.</p>
+    {% endif %}
+  </section>
+
+  {% include "includes/paginacao.html" %}
+{% endblock %}
