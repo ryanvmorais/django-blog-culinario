@@ -1,19 +1,17 @@
 """
-URL configuration for blog_culinario project.
+Configuração raiz de URLs do projeto Blog Culinário.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+Mapeia as rotas principais: painel Admin do Django, e as URLs de cada app de
+domínio (``nucleo``, ``receitas``, ``usuarios``), cada um com seu próprio
+namespace via ``app_name`` em ``urls.py``.
+
+Em desenvolvimento (``DEBUG=True``), acrescenta a rota de ``media/`` para
+servir os uploads de imagem das receitas diretamente pelo Django — em
+produção, o WhiteNoise cuida só de estáticos, e mídia real usaria um
+storage externo (fora do escopo deste projeto educacional).
 """
+
+from __future__ import annotations
 
 from django.conf import settings
 from django.conf.urls.static import static

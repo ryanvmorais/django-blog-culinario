@@ -4,7 +4,7 @@ e limite de tentativas de login (spec 006).
 
 Estratégia de isolamento: ORM/HTTP de teste do Django, sem mock — login e
 logout são o comportamento nativo do ``django.contrib.auth``, exercitado
-via `Client` como um navegador faria. O cache é limpo antes de cada teste
+via ``Client`` como um navegador faria. O cache é limpo antes de cada teste
 (fixture autouse) para os contadores de limitação de taxa não vazarem de um
 teste para o outro.
 """
@@ -44,7 +44,7 @@ def _dados_cadastro(**kwargs: Any) -> dict[str, Any]:
             ``password1``, etc.).
 
     Returns:
-        dict[str, Any]: dados prontos para o POST em `usuarios:cadastro`.
+        dict[str, Any]: dados prontos para o POST em ``usuarios:cadastro``.
     """
     dados = {
         "username": "chef-teste",
@@ -149,7 +149,7 @@ def test_logout_encerra_sessao(client: Client) -> None:
 
 
 def test_logout_via_get_nao_e_permitido(client: Client) -> None:
-    """`LogoutView` só aceita POST desde o Django 4.1 (ADR-2)."""
+    """``LogoutView`` só aceita POST desde o Django 4.1 (ADR-2)."""
     usuario = User.objects.create_user(
         username="chef-teste", password="uma-senha-bem-forte-123"
     )
@@ -205,7 +205,7 @@ def test_login_dois_ips_nao_compartilham_o_limite(client: Client) -> None:
 def test_limite_excedido_expira_apos_a_janela(rf: RequestFactory) -> None:
     """O contador zera sozinho ao fim da janela configurada (RF-03).
 
-    Testa `limite_excedido` diretamente (não via view) -- a janela real do
+    Testa ``limite_excedido`` diretamente (não via view) -- a janela real do
     login é de 5 minutos, longa demais para esperar num teste.
     """
     request = rf.post("/qualquer-url/")

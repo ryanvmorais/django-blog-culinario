@@ -49,7 +49,7 @@ defaults seguros. Ver `.env.example` para a lista completa e
 ```
 blog_culinario/settings/   # base.py (comum) + dev.py / prod.py (por ambiente)
 nucleo/                    # home, sobre, contato — páginas institucionais
-receitas/                  # domínio principal: Receita, Categoria, Tag
+receitas/                  # domínio principal: Receita, Categoria, Tag, Comentario
 usuarios/                  # autenticação (django.contrib.auth)
 templates/                 # base.html + includes/ (navbar, rodapé)
 static/css/                # design system: tokens.css (variáveis) + base.css
@@ -74,6 +74,11 @@ Sequência do portão: `ruff check` → `black --check` → `mypy` → `pytest` 
 `/qualidade-python`). CI (`.github/workflows/ci.yml`) roda a mesma sequência
 em todo push/PR.
 
+## Skills deste projeto
+
+Nenhuma skill específica do repositório ainda — usa as skills globais do
+Ryan (`~/.claude/skills/`), listadas no `CLAUDE.md` global.
+
 ## Spec-driven development
 
 Toda funcionalidade nova (modelagem, views, autenticação, etc.) nasce como uma
@@ -86,8 +91,3 @@ atual. Conduzido pela skill `/spec`.
 `uv` gerencia o ambiente. Commite `pyproject.toml` **e** `uv.lock`. PRs do
 Dependabot (`.github/dependabot.yml`) são revisados com `/revisar-dependabot`,
 não mergeados automaticamente.
-
-## Skills deste projeto
-
-Nenhuma skill específica do repositório ainda — usa as skills globais do
-Ryan (`~/.claude/skills/`), listadas no `CLAUDE.md` global.

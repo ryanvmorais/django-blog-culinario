@@ -4,9 +4,9 @@ listagem/detalhe (spec 002), comentários (spec 005), limite de taxa (spec
 006) e honeypot/time-trap (spec 007) na criação de comentário.
 
 Estratégia de isolamento: tudo aqui é ORM/HTTP de teste do Django rodando
-contra o banco de teste do pytest-django (`@pytest.mark.django_db`) — sem
+contra o banco de teste do pytest-django (``@pytest.mark.django_db``) — sem
 mock. Não há I/O externo (rede, storage remoto) neste domínio ainda; o
-upload de imagem usa `SimpleUploadedFile` em memória. O cache é limpo antes
+upload de imagem usa ``SimpleUploadedFile`` em memória. O cache é limpo antes
 de cada teste (fixture autouse) para os contadores de limitação de taxa não
 vazarem de um teste para o outro.
 """
@@ -133,7 +133,7 @@ def _carimbo_valido(segundos_atras: float = 5) -> str:
             (mínimo de 2s); passar 0 simula um envio no mesmo instante.
 
     Returns:
-        str: valor pronto para o campo `carimbo_tempo` do POST (spec 007).
+        str: valor pronto para o campo ``carimbo_tempo`` do POST (spec 007).
     """
     return signing.dumps(time.time() - segundos_atras, salt=_ASSINATURA_SALT)
 
@@ -176,7 +176,7 @@ def test_receita_nasce_como_rascunho_com_timestamps() -> None:
 
 
 def test_excluir_categoria_em_uso_e_bloqueado() -> None:
-    """`on_delete=PROTECT` impede apagar uma categoria com receita associada."""
+    """``on_delete=PROTECT`` impede apagar uma categoria com receita associada."""
     categoria = _categoria()
     _receita(categoria=categoria)
 
@@ -196,7 +196,7 @@ def test_excluir_tag_nao_afeta_a_receita() -> None:
 
 
 def test_excluir_autor_preserva_a_receita_sem_autor() -> None:
-    """`on_delete=SET_NULL` preserva o conteúdo mesmo sem o usuário (ADR-2)."""
+    """``on_delete=SET_NULL`` preserva o conteúdo mesmo sem o usuário (ADR-2)."""
     autor = User.objects.create_user(username="cozinheira", password="senha-forte-123")
     receita = _receita(autor=autor)
 
@@ -307,7 +307,7 @@ def test_listagem_pagina_inexistente_retorna_404(client: Client) -> None:
 def test_listagem_nao_tem_n_mais_1_com_tags(
     client: Client, django_assert_num_queries: Any
 ) -> None:
-    """`select_related`/`prefetch_related` mantêm a query constante (RNF-01)."""
+    """``select_related``/``prefetch_related`` mantêm a query constante (RNF-01)."""
     categoria = _categoria()
     for i in range(3):
         receita = _receita(titulo=f"Receita {i}", categoria=categoria, publicado=True)
@@ -331,7 +331,7 @@ def test_busca_por_titulo_encontra_receita(client: Client) -> None:
 
 
 def test_busca_por_ingrediente_encontra_receita(client: Client) -> None:
-    """ "cenoura" só aparece em `ingredientes`, não no título (RF-01)."""
+    """ "cenoura" só aparece em ``ingredientes``, não no título (RF-01)."""
     receita = _receita(
         titulo="Bolo simples", ingredientes="2 cenouras\n1 ovo", publicado=True
     )
@@ -487,7 +487,7 @@ def test_comentario_criado_com_os_campos_esperados() -> None:
 
 
 def test_excluir_receita_apaga_os_comentarios() -> None:
-    """`on_delete=CASCADE`: comentário não sobrevive sem a receita (RF-01)."""
+    """``on_delete=CASCADE``: comentário não sobrevive sem a receita (RF-01)."""
     receita = _receita(publicado=True)
     comentario = _comentario(receita=receita)
 
@@ -497,7 +497,7 @@ def test_excluir_receita_apaga_os_comentarios() -> None:
 
 
 def test_excluir_autor_do_comentario_preserva_o_comentario() -> None:
-    """`on_delete=SET_NULL`, mesma política de `Receita.autor` (RF-01)."""
+    """``on_delete=SET_NULL``, mesma política de ``Receita.autor`` (RF-01)."""
     autor = User.objects.create_user(
         username="comentarista", password="senha-forte-123"
     )
@@ -533,7 +533,7 @@ def test_comentarios_aparecem_do_mais_antigo_ao_mais_novo(client: Client) -> Non
 
 
 def test_comentario_reprovado_nao_aparece_na_pagina(client: Client) -> None:
-    """Também cobre RF-07: desmarcar `aprovado` some com o comentário público."""
+    """Também cobre RF-07: desmarcar ``aprovado`` some com o comentário público."""
     receita = _receita(publicado=True)
     comentario = _comentario(
         receita=receita, texto="Comentário escondido", aprovado=False

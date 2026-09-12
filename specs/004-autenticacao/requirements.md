@@ -1,6 +1,6 @@
 ---
 feature: Autenticação de usuários (cadastro, login, logout)
-status: aprovado
+status: concluído
 data: 2026-09-12
 relacionado: []
 origem: concepcao

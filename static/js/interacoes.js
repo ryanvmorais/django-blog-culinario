@@ -6,7 +6,7 @@
 
 // -----------------------------------------------------------------------------
 // MENU MOBILE
-// Alterna a classe .navbar__links--aberto (ver static/css/base.css, seção 8)
+// Alterna a classe .navbar__links--aberto (ver static/css/base.css, seção 10)
 // e mantém aria-expanded sincronizado para leitor de tela.
 // -----------------------------------------------------------------------------
 function inicializarMenuMobile() {

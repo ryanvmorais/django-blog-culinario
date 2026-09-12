@@ -1,10 +1,9 @@
 """
-WSGI config for blog_culinario project.
+Ponto de entrada WSGI do projeto Blog Culinário.
 
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/6.1/howto/deployment/wsgi/
+Expõe o callable WSGI na variável de módulo ``application``, utilizada por
+servidores compatíveis com WSGI para servir a aplicação de forma síncrona —
+o modelo de deploy do PythonAnywhere (ver ``settings/prod.py``).
 """
 
 import os
