@@ -21,6 +21,8 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import DetailView, ListView
 
+from blog_culinario.limitacao import limite_excedido
+
 from .forms import FormularioComentario
 from .models import Receita
 
@@ -165,6 +167,10 @@ class ComentarioCreateView(LoginRequiredMixin, View):
     def post(self, request: HttpRequest, slug: str) -> HttpResponse:
         """Valida e salva o comentário, ou volta com uma mensagem de erro (ADR-3).
 
+        Também bloqueia o IP que já atingiu o limite de comentários na
+        janela de tempo (spec 006, RF-02), antes de qualquer acesso ao
+        banco.
+
         Args:
             request (HttpRequest): requisição POST recebida, já autenticada.
             slug (str): slug da receita comentada, vindo da URL.
@@ -173,6 +179,14 @@ class ComentarioCreateView(LoginRequiredMixin, View):
             HttpResponse: redireciona de volta para `receitas:detalhe`,
             na âncora `#comentarios`.
         """
+        if limite_excedido(request, "comentario", limite=5, janela_segundos=60):
+            messages.error(
+                request, "Você está comentando rápido demais. Aguarde um instante."
+            )
+            return redirect(
+                reverse("receitas:detalhe", kwargs={"slug": slug}) + "#comentarios"
+            )
+
         receita = get_object_or_404(Receita, slug=slug, publicado=True)
         form = FormularioComentario(request.POST)
         if form.is_valid():
