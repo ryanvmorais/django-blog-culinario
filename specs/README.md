@@ -48,6 +48,7 @@ Nenhuma fase avança sem o "ok" explícito do Ryan. Comandos: `/spec nova <nome>
 | [003-busca-e-filtros](003-busca-e-filtros/requirements.md) | Busca textual + filtro por categoria/tag na listagem | concluído |
 | [004-autenticacao](004-autenticacao/requirements.md) | Cadastro, login e logout via django.contrib.auth | concluído |
 | [005-comentarios](005-comentarios/requirements.md) | Comentários em receitas (autenticado) + moderação no admin | concluído |
+| [006-limitacao-de-taxa](006-limitacao-de-taxa/requirements.md) | Rate limiting em login e criação de comentários (achado da auditoria de segurança) | concluído |
 
 ## Notas de manutenção
 
