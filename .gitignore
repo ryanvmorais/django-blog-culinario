@@ -12,11 +12,13 @@ dist/
 .python-version.local
 
 # --- 3. CACHES DE FERRAMENTA ---
+# Cache local de ruff/mypy/pytest — recriado do zero a cada execução.
 .ruff_cache/
 .mypy_cache/
 .pytest_cache/
 
 # --- 4. SAÍDA DE TESTE E COBERTURA ---
+# Relatório de cobertura gerado localmente; não faz sentido versionar.
 .coverage
 htmlcov/
 
@@ -37,6 +39,7 @@ db.sqlite3-journal
 .env
 
 # --- 8. EDITOR E SISTEMA OPERACIONAL ---
+# Configuração pessoal de editor e arquivos gerados pelo sistema operacional.
 .vscode/
 .idea/
 .DS_Store
