@@ -1,0 +1,77 @@
+/*
+ * Tokens do design system (tokens.css)
+ *
+ * Paleta, tipografia, espaçamento, sombras e raios reunidos em custom
+ * properties. Nenhum outro arquivo CSS deste projeto declara uma cor ou um
+ * tamanho de fonte "cru" — tudo referencia uma variável daqui, para o
+ * visual do site inteiro mudar a partir de um lugar só.
+ *
+ * Estrutura do arquivo:
+ *   1. Paleta (identidade culinária: terracota + creme + verde sálvia)
+ *   2. Tipografia (Fraunces para títulos, Inter para corpo)
+ *   3. Espaçamento, raio e sombra
+ *   4. Transições
+ */
+
+:root {
+  /* 1. Paleta ---------------------------------------------------------------
+     Terracota como cor de ação (links, botões, CTAs); verde sálvia como
+     contraponto fresco para tags/categorias; creme no fundo para lembrar
+     papel de caderno de receitas em vez de branco clínico de app. */
+  --cor-primaria: #c1440e;
+  --cor-primaria-escura: #9c360b;
+  --cor-primaria-clara: #f2d9c9;
+
+  --cor-destaque: #6b8f71;
+  --cor-destaque-escura: #4f6b54;
+
+  --cor-fundo: #fbf4ea;
+  --cor-superficie: #ffffff;
+  --cor-borda: #e8dcc8;
+
+  --cor-texto: #2f2620;
+  --cor-texto-suave: #6b5d52;
+  --cor-texto-invertido: #fbf4ea;
+
+  --cor-erro: #b3261e;
+  --cor-sucesso: #2f6b3a;
+
+  /* 2. Tipografia -------------------------------------------------------------
+     Fraunces (serifada, editorial) nos títulos evoca caderno de receitas;
+     Inter no corpo mantém a leitura confortável em telas pequenas. */
+  --fonte-titulo: "Fraunces", "Georgia", serif;
+  --fonte-corpo: "Inter", "Segoe UI", sans-serif;
+
+  --texto-xs: 0.8rem;
+  --texto-sm: 0.9rem;
+  --texto-base: 1rem;
+  --texto-lg: clamp(1.15rem, 1rem + 0.6vw, 1.35rem);
+  --texto-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  --texto-2xl: clamp(2rem, 1.5rem + 2vw, 3rem);
+
+  --altura-linha-titulo: 1.15;
+  --altura-linha-corpo: 1.65;
+
+  /* 3. Espaçamento, raio e sombra ---------------------------------------------
+     Escala em rem para acompanhar o zoom/preferência de fonte do usuário. */
+  --espaco-1: 0.25rem;
+  --espaco-2: 0.5rem;
+  --espaco-3: 0.75rem;
+  --espaco-4: 1rem;
+  --espaco-6: 1.5rem;
+  --espaco-8: 2rem;
+  --espaco-12: 3rem;
+  --espaco-16: 4rem;
+
+  --raio-sm: 6px;
+  --raio-md: 12px;
+  --raio-lg: 20px;
+  --raio-pill: 999px;
+
+  --sombra-cartao: 0 1px 2px rgba(47, 38, 32, 0.06), 0 8px 24px rgba(47, 38, 32, 0.08);
+  --sombra-elevada: 0 4px 8px rgba(47, 38, 32, 0.08), 0 16px 40px rgba(47, 38, 32, 0.14);
+
+  /* 4. Transições --------------------------------------------------------- */
+  --transicao-rapida: 150ms ease;
+  --transicao-padrao: 250ms ease;
+}

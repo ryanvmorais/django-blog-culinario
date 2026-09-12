@@ -1,0 +1,30 @@
+{% load static %}
+<!-- ============================================================
+     SEÇÃO: NAVBAR
+     Barra fixa no topo (position: sticky, ver static/css/base.css). O botão
+     de menu só aparece no breakpoint mobile; o toggle é feito por
+     inicializarMenuMobile() em static/js/interacoes.js.
+     ============================================================ -->
+<header class="navbar">
+  <div class="container">
+    <a class="navbar__marca" href="{% url 'nucleo:home' %}">Blog Culinário</a>
+
+    <nav aria-label="Navegação principal">
+      {# Receitas e Sobre entram quando as specs correspondentes forem implementadas. #}
+      <ul class="navbar__links" id="menu-principal">
+        <li><a href="{% url 'nucleo:home' %}">Início</a></li>
+      </ul>
+    </nav>
+
+    <button
+      type="button"
+      class="navbar__alternador"
+      aria-label="Abrir menu de navegação"
+      aria-controls="menu-principal"
+      aria-expanded="false"
+    >
+      ☰
+    </button>
+  </div>
+</header>
+<!-- fim: NAVBAR -->

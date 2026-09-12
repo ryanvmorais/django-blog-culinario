@@ -1,0 +1,327 @@
+/*
+ * Estilos base do site (base.css)
+ *
+ * Carregado depois de tokens.css. Não é Tailwind: é CSS "na mão", de
+ * propósito -- o objetivo deste projeto é ensinar Django, então o
+ * front-end fica em HTML + CSS puro, sem build step, para quem clonar o
+ * repo conseguir editar um arquivo e ver o resultado direto no navegador.
+ *
+ * Estrutura do arquivo:
+ *   1. Reset e elementos base
+ *   2. Layout (container, grade)
+ *   3. Navbar
+ *   4. Hero
+ *   5. Cartões de receita
+ *   6. Botões e badges
+ *   7. Rodapé
+ *   8. Responsivo (mobile)
+ */
+
+/* 1. Reset e elementos base -------------------------------------------------
+   Reset mínimo: só o que evita surpresa (box-sizing, margem de heading/lista,
+   imagem fluida). Nada de normalize.css inteiro -- não precisamos disso. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-base);
+  line-height: var(--altura-linha-corpo);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0 0 var(--espaco-4);
+  font-family: var(--fonte-titulo);
+  line-height: var(--altura-linha-titulo);
+  color: var(--cor-texto);
+}
+
+h1 {
+  font-size: var(--texto-2xl);
+}
+
+h2 {
+  font-size: var(--texto-xl);
+}
+
+h3 {
+  font-size: var(--texto-lg);
+}
+
+p {
+  margin: 0 0 var(--espaco-4);
+  max-width: 68ch; /* linha de leitura confortável em textos longos de receita */
+}
+
+a {
+  color: var(--cor-primaria);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--cor-primaria-escura);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+ul,
+ol {
+  padding-left: 1.25em;
+}
+
+
+/* 2. Layout ------------------------------------------------------------- */
+.container {
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: var(--espaco-4);
+}
+
+.grade-receitas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--espaco-6);
+}
+
+
+/* 3. Navbar --------------------------------------------------------------
+   .navbar-aberta é alternada pelo menu mobile em static/js/interacoes.js. */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--cor-fundo);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.navbar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--espaco-3);
+}
+
+.navbar__marca {
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-lg);
+  font-weight: 600;
+  color: var(--cor-texto);
+  text-decoration: none;
+}
+
+.navbar__links {
+  display: flex;
+  gap: var(--espaco-6);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar__links a {
+  color: var(--cor-texto);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.navbar__links a:hover {
+  color: var(--cor-primaria);
+}
+
+.navbar__alternador {
+  display: none; /* só aparece no breakpoint mobile, seção 8 */
+}
+
+
+/* 4. Hero ------------------------------------------------------------------
+   Faixa de abertura da home -- convite editorial, não um formulário de venda. */
+.hero {
+  padding-block: var(--espaco-16) var(--espaco-12);
+  text-align: center;
+}
+
+.hero__legenda {
+  display: inline-block;
+  margin-bottom: var(--espaco-4);
+  padding: var(--espaco-1) var(--espaco-3);
+  border-radius: var(--raio-pill);
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria-escura);
+  font-size: var(--texto-sm);
+  font-weight: 600;
+}
+
+.hero__titulo {
+  max-width: 18ch;
+  margin-inline: auto;
+}
+
+.hero__descricao {
+  max-width: 55ch;
+  margin-inline: auto;
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-lg);
+}
+
+.hero__acoes {
+  display: flex;
+  gap: var(--espaco-4);
+  justify-content: center;
+  margin-top: var(--espaco-6);
+}
+
+
+/* 5. Cartões de receita ------------------------------------------------- */
+.cartao-receita {
+  background: var(--cor-superficie);
+  border-radius: var(--raio-lg);
+  overflow: hidden;
+  box-shadow: var(--sombra-cartao);
+  transition: transform var(--transicao-padrao), box-shadow var(--transicao-padrao);
+}
+
+.cartao-receita:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sombra-elevada);
+}
+
+.cartao-receita__imagem {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  object-fit: cover;
+  background: var(--cor-primaria-clara); /* placeholder enquanto não há imagem real */
+}
+
+.cartao-receita__corpo {
+  padding: var(--espaco-4);
+}
+
+.cartao-receita__categoria {
+  color: var(--cor-destaque-escura);
+  font-size: var(--texto-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cartao-receita__titulo {
+  margin: var(--espaco-2) 0;
+  font-size: var(--texto-lg);
+}
+
+.cartao-receita__meta {
+  display: flex;
+  gap: var(--espaco-4);
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-sm);
+}
+
+
+/* 6. Botões e badges ------------------------------------------------------ */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  padding: var(--espaco-3) var(--espaco-6);
+  border: 1px solid transparent;
+  border-radius: var(--raio-pill);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--transicao-rapida), border-color var(--transicao-rapida);
+}
+
+.botao--primario {
+  background: var(--cor-primaria);
+  color: var(--cor-texto-invertido);
+}
+
+.botao--primario:hover {
+  background: var(--cor-primaria-escura);
+  color: var(--cor-texto-invertido);
+}
+
+.botao--contorno {
+  border-color: var(--cor-borda);
+  color: var(--cor-texto);
+}
+
+.botao--contorno:hover {
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+}
+
+
+/* 7. Rodapé --------------------------------------------------------------- */
+.rodape {
+  margin-top: var(--espaco-16);
+  padding-block: var(--espaco-8);
+  border-top: 1px solid var(--cor-borda);
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-sm);
+}
+
+.rodape .container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-4);
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+/* 8. Responsivo (mobile) ---------------------------------------------------
+   Abaixo de 720px o menu de links vira painel deslizante, controlado pela
+   classe .navbar__links--aberto (alternada por interacoes.js). */
+@media (max-width: 720px) {
+  .navbar__alternador {
+    display: inline-flex;
+    background: none;
+    border: none;
+    font-size: var(--texto-lg);
+    cursor: pointer;
+  }
+
+  .navbar__links {
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    flex-direction: column;
+    gap: 0;
+    background: var(--cor-fundo);
+    border-bottom: 1px solid var(--cor-borda);
+    display: none;
+  }
+
+  .navbar__links--aberto {
+    display: flex;
+  }
+
+  .navbar__links a {
+    display: block;
+    padding: var(--espaco-3) var(--espaco-4);
+    border-top: 1px solid var(--cor-borda);
+  }
+
+  .hero__acoes {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,36 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block titulo %}Blog Culinário{% endblock %}</title>
+    <meta
+      name="description"
+      content="{% block descricao %}Blog culinário multipáginas construído em Django — projeto educacional para quem está aprendendo Python.{% endblock %}"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="{% static 'css/tokens.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+    {% block css_extra %}{% endblock %}
+  </head>
+  <body>
+    {% include "includes/navbar.html" %}
+
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+
+    {% include "includes/rodape.html" %}
+
+    <script src="{% static 'js/interacoes.js' %}" defer></script>
+    {% block js_extra %}{% endblock %}
+  </body>
+</html>

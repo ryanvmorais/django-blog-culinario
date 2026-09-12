@@ -1,0 +1,44 @@
+# CI — espelha o portão de qualidade local (ruff -> black -> mypy -> pytest,
+# ver /qualidade-python). Roda em todo push/PR para pegar regressão antes do
+# merge.
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualidade:
+    name: Lint, tipos e testes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Instalar dependências
+        run: uv sync --all-extras --dev
+
+      - name: Lint (ruff)
+        run: uv run ruff check .
+
+      - name: Formatação (black)
+        run: uv run black --check .
+
+      - name: Tipos (mypy)
+        run: uv run mypy .
+
+      - name: Testes (pytest)
+        run: uv run pytest

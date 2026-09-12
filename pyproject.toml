@@ -1,0 +1,68 @@
+# =============================================================================
+# Configuração do projeto (PEP 621) — gerenciado com uv.
+#
+#   [project]            metadados + dependências de runtime
+#   [dependency-groups]  dev    lint / tipos / testes
+#   [tool.*]             ruff, black, mypy, pytest
+#
+# Versões exatas de todo o grafo ficam fixadas no uv.lock (`uv lock`); as
+# linhas aqui são só o piso mínimo.
+# =============================================================================
+
+[project]
+name = "blog-culinario"
+version = "0.1.0"
+description = "Blog culinário multipáginas em Django — projeto educacional para aprender a construir aplicações web com Python."
+requires-python = ">=3.14"
+dependencies = [
+    "django>=6.1.1",
+    "django-environ>=0.14.0",
+    "pillow>=12.3.0",
+    "whitenoise>=6.12.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=26.5.1",
+    "django-stubs>=6.1.0",
+    "mypy>=2.3.1",
+    "pytest>=9.1.1",
+    "pytest-django>=4.14.0",
+    "ruff>=0.16.7",
+]
+
+# --- Lint (ruff, substitui flake8 + isort) ----------------------------------
+[tool.ruff]
+line-length = 88
+target-version = "py314"
+exclude = ["**/migrations/*.py"]  # geradas pelo Django, não seguem o estilo do projeto
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4", "RUF"]  # pyflakes+pycodestyle, isort, pyupgrade, bugbear, simplify, comprehensions, ruff-native
+
+[tool.ruff.lint.isort]
+known-first-party = ["blog_culinario", "nucleo", "receitas", "usuarios"]
+
+# --- Formatador (black) ------------------------------------------------------
+[tool.black]
+line-length = 88
+target-version = ["py314"]
+extend-exclude = "migrations/"
+
+# --- Type checker (mypy + django-stubs) --------------------------------------
+[tool.mypy]
+python_version = "3.14"
+plugins = ["mypy_django_plugin.main"]
+exclude = ["migrations/"]
+
+[tool.django-stubs]
+django_settings_module = "blog_culinario.settings.dev"
+
+[[tool.mypy.overrides]]
+module = "environ"  # django-environ não publica stubs nem py.typed
+ignore_missing_imports = true
+
+# --- Testes (pytest + pytest-django) -----------------------------------------
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "blog_culinario.settings.dev"
+python_files = ["tests.py", "test_*.py"]

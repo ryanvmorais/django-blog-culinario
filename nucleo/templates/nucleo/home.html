@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block titulo %}Blog Culinário — receitas para todos os dias{% endblock %}
+
+{% block content %}
+  <!-- ============================================================
+       SEÇÃO: HERO
+       ============================================================ -->
+  <section class="hero container">
+    <span class="hero__legenda">Projeto educacional em Django</span>
+    <h1 class="hero__titulo">Receitas com carinho, código com clareza.</h1>
+    <p class="hero__descricao">
+      Este é o esqueleto do Blog Culinário: um blog multipáginas construído
+      passo a passo em Python/Django, para servir de referência a quem está
+      aprendendo a estruturar modelos, views, templates e autenticação.
+    </p>
+    <div class="hero__acoes">
+      <a class="botao botao--primario" href="#receitas-em-breve">Ver receitas</a>
+      <a
+        class="botao botao--contorno"
+        href="https://github.com/ryanvmorais/django-blog-culinario"
+        target="_blank"
+        rel="noopener"
+      >
+        Acompanhar no GitHub
+      </a>
+    </div>
+  </section>
+  <!-- fim: HERO -->
+
+  <!-- ============================================================
+       SEÇÃO: RECEITAS (placeholder visual)
+       Cartões estáticos só para validar o design system antes do modelo
+       Receita existir — a spec de modelagem substitui isto por dados reais.
+       ============================================================ -->
+  <section class="container" id="receitas-em-breve">
+    <h2>Em breve, receitas de verdade</h2>
+    <p>
+      Estes cartões são um esboço visual do que a listagem de receitas vai
+      exibir assim que o modelo <code>Receita</code> existir.
+    </p>
+
+    <div class="grade-receitas">
+      <article class="cartao-receita">
+        <div class="cartao-receita__imagem"></div>
+        <div class="cartao-receita__corpo">
+          <span class="cartao-receita__categoria">Sobremesas</span>
+          <h3 class="cartao-receita__titulo">Exemplo de receita</h3>
+          <div class="cartao-receita__meta">
+            <span>30 min</span>
+            <span>4 porções</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="cartao-receita">
+        <div class="cartao-receita__imagem"></div>
+        <div class="cartao-receita__corpo">
+          <span class="cartao-receita__categoria">Massas</span>
+          <h3 class="cartao-receita__titulo">Exemplo de receita</h3>
+          <div class="cartao-receita__meta">
+            <span>45 min</span>
+            <span>2 porções</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="cartao-receita">
+        <div class="cartao-receita__imagem"></div>
+        <div class="cartao-receita__corpo">
+          <span class="cartao-receita__categoria">Veganas</span>
+          <h3 class="cartao-receita__titulo">Exemplo de receita</h3>
+          <div class="cartao-receita__meta">
+            <span>20 min</span>
+            <span>3 porções</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+  <!-- fim: RECEITAS -->
+{% endblock %}

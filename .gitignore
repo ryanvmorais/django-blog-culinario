@@ -1,0 +1,43 @@
+# --- 1. PYTHON ---
+# Bytecode e artefatos de build recriáveis a qualquer momento.
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# --- 2. AMBIENTE E DEPENDÊNCIAS ---
+# Recriável com `uv sync`; o que fixa as versões é o uv.lock, que É commitado.
+.venv/
+.python-version.local
+
+# --- 3. CACHES DE FERRAMENTA ---
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# --- 4. SAÍDA DE TESTE E COBERTURA ---
+.coverage
+htmlcov/
+
+# --- 5. BANCO DE DADOS ---
+# SQLite local — cada dev/ambiente recria o próprio com as migrations.
+db.sqlite3
+db.sqlite3-journal
+
+# --- 6. ARQUIVOS ESTÁTICOS E DE MÍDIA GERADOS ---
+# staticfiles/ é saída do collectstatic; media/ são uploads de usuário.
+# .gitkeep mantém a pasta versionada mesmo vazia.
+/staticfiles/
+/media/*
+!/media/.gitkeep
+
+# --- 7. SEGREDOS E CONFIGURAÇÃO LOCAL ---
+# .env carrega SECRET_KEY/credenciais reais; .env.example é o modelo versionado.
+.env
+
+# --- 8. EDITOR E SISTEMA OPERACIONAL ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
