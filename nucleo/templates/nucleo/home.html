@@ -1,49 +1,47 @@
-{% extends "base.html" %}
-
-{% block titulo %}Blog Culinário — receitas para todos os dias{% endblock %}
-
-{% block content %}
-  <!-- ============================================================
+{% extends "base.html" %} {% block titulo %}Blog Culinário — receitas para todos
+os dias{% endblock %} {% block content %}
+<!-- ============================================================
        SEÇÃO: HERO
        ============================================================ -->
-  <section class="hero container">
-    <span class="hero__legenda">Projeto educacional em Django</span>
-    <h1 class="hero__titulo">Receitas com carinho, código com clareza.</h1>
-    <p class="hero__descricao">
-      Este é o esqueleto do Blog Culinário: um blog multipáginas construído
-      passo a passo em Python/Django, para servir de referência a quem está
-      aprendendo a estruturar modelos, views, templates e autenticação.
-    </p>
-    <div class="hero__acoes">
-      <a class="botao botao--primario" href="{% url 'receitas:lista' %}">Ver receitas</a>
-      <a
-        class="botao botao--contorno"
-        href="https://github.com/ryanvmorais/django-blog-culinario"
-        target="_blank"
-        rel="noopener"
-      >
-        Acompanhar no GitHub
-      </a>
-    </div>
-  </section>
-  <!-- fim: HERO -->
+<section class="hero container">
+  <span class="hero__legenda">Projeto Educacional Open Source</span>
+  <h1 class="hero__titulo">Código limpo para quem quer dominar o Django.</h1>
+  <p class="hero__descricao">
+    Este Blog Culinário é o seu ponto de partida perfeito para entender a fundo
+    o ecossistema Python/Django. Explore a estrutura completa de um projeto real
+    — com autenticação, templates e boas práticas de segurança prontas para você
+    consultar e aplicar nos seus próprios sistemas.
+  </p>
+  <div class="hero__acoes">
+    <a class="botao botao--primario" href="{% url 'receitas:lista' %}"
+      >Ver receitas</a
+    >
+    <a
+      class="botao botao--contorno"
+      href="https://github.com/ryanvmorais/django-blog-culinario"
+      target="_blank"
+      rel="noopener"
+    >
+      Acompanhar no GitHub
+    </a>
+  </div>
+</section>
+<!-- fim: HERO -->
 
-  <!-- ============================================================
+<!-- ============================================================
        SEÇÃO: RECEITAS RECENTES
        Até 3 receitas publicadas mais recentes (spec 002, RF-06).
        ============================================================ -->
-  <section class="container" id="receitas-recentes">
-    <h2>Receitas recentes</h2>
+<section class="container" id="receitas-recentes">
+  <h2>Receitas recentes</h2>
 
-    {% if receitas_recentes %}
-      <div class="grade-receitas">
-        {% for receita in receitas_recentes %}
-          {% include "includes/cartao_receita.html" %}
-        {% endfor %}
-      </div>
-    {% else %}
-      <p>Nenhuma receita publicada ainda — volte em breve.</p>
-    {% endif %}
-  </section>
-  <!-- fim: RECEITAS RECENTES -->
+  {% if receitas_recentes %}
+  <div class="grade-receitas">
+    {% for receita in receitas_recentes %} {% include "includes/cartao_receita.html" %} {% endfor %}
+  </div>
+  {% else %}
+  <p>Nenhuma receita publicada ainda — volte em breve.</p>
+  {% endif %}
+</section>
+<!-- fim: RECEITAS RECENTES -->
 {% endblock %}
