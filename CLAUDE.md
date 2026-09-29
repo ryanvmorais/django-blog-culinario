@@ -48,6 +48,7 @@ defaults seguros. Ver `.env.example` para a lista completa e
 
 ```
 blog_culinario/settings/   # base.py (comum) + dev.py / prod.py (por ambiente)
+blog_culinario/limitacao.py # rate limit por IP via cache do Django (login e comentário — spec 006)
 nucleo/                    # home, sobre, contato — páginas institucionais
 receitas/                  # domínio principal: Receita, Categoria, Tag, Comentario
 usuarios/                  # autenticação (django.contrib.auth)
