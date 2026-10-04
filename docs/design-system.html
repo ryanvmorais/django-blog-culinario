@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Design System — Blog Culinário</title>
+
+    <!-- ============================================================
+         Catálogo visual do Blog Culinário (documentação de referência).
+         NÃO é servido pelo Django: abra este arquivo direto no navegador.
+
+         Carrega o MESMO tokens.css e base.css do site (e a mesma fonte do
+         base.html), então cores, tipografia e classes aqui nunca ficam
+         desatualizados. O que pode envelhecer é o HTML dos componentes,
+         copiado dos templates — cada exemplo indica o arquivo de origem.
+         Veja "Como manter" no fim da página.
+         ============================================================ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../static/css/tokens.css" />
+    <link rel="stylesheet" href="../static/css/base.css" />
+
+    <style>
+      /*
+       * Estilos exclusivos desta página de documentação (prefixo .ds-).
+       *
+       * Ficam aqui, e não em base.css, para não vazar para o site. Usam os
+       * tokens do projeto: o "chrome" da página também segue o design system.
+       *
+       * Estrutura:
+       *   1. Navegação e seções
+       *   2. Amostras (cores, espaçamento, raios, sombras)
+       *   3. Exemplos de componente
+       *   4. Tabelas
+       */
+
+      /* 1. Navegação e seções ---------------------------------------------
+         z-index acima do .navbar de exemplo (20), que também é sticky. */
+      .ds-nav {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: var(--cor-texto);
+        color: var(--cor-texto-invertido);
+      }
+
+      .ds-nav .container {
+        display: flex;
+        align-items: center;
+        gap: var(--espaco-6);
+        padding-block: var(--espaco-3);
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .ds-nav a {
+        color: var(--cor-texto-invertido);
+        font-weight: 500;
+        text-decoration: none;
+      }
+
+      .ds-nav a:hover {
+        color: var(--cor-primaria-clara);
+      }
+
+      .ds-nav__marca {
+        font-family: var(--fonte-titulo);
+        font-weight: 700;
+      }
+
+      .ds-secao {
+        padding-block: var(--espaco-12);
+        border-bottom: 1px solid var(--cor-borda);
+      }
+
+      .ds-secao__numero {
+        margin: 0 0 var(--espaco-1);
+        color: var(--cor-primaria);
+        font-size: var(--texto-sm);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .ds-rotulo {
+        margin: var(--espaco-6) 0 var(--espaco-2);
+        color: var(--cor-texto-suave);
+        font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+        font-size: var(--texto-xs);
+      }
+
+      .ds-codigo {
+        font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+        font-size: 0.9em;
+        background: var(--cor-borda);
+        padding: 0.1em 0.4em;
+        border-radius: var(--raio-sm);
+      }
+
+      /* 2. Amostras --------------------------------------------------------- */
+      .ds-amostras {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: var(--espaco-4);
+      }
+
+      .ds-amostra__cor {
+        height: 72px;
+        border: 1px solid var(--cor-borda);
+        border-radius: var(--raio-md);
+      }
+
+      .ds-amostra p {
+        margin: var(--espaco-1) 0 0;
+        font-size: var(--texto-xs);
+        color: var(--cor-texto-suave);
+      }
+
+      .ds-amostra__nome {
+        margin-top: var(--espaco-2) !important;
+        font-weight: 700;
+        color: var(--cor-texto) !important;
+      }
+
+      .ds-barra {
+        height: 14px;
+        background: var(--cor-primaria);
+        border-radius: var(--raio-pill);
+      }
+
+      .ds-caixa {
+        height: 72px;
+        background: var(--cor-superficie);
+        border: 1px solid var(--cor-borda);
+      }
+
+      /* 3. Exemplos de componente --------------------------------------------
+         Moldura que isola o exemplo do resto da página. */
+      .ds-exemplo {
+        padding: var(--espaco-6);
+        background: var(--cor-superficie);
+        border: 1px solid var(--cor-borda);
+        border-radius: var(--raio-md);
+      }
+
+      .ds-exemplo--fundo {
+        background: var(--cor-fundo);
+      }
+
+      .ds-exemplo--sem-padding {
+        padding: 0;
+        overflow: visible;
+      }
+
+      /* O menu mobile do .navbar abre para baixo (position: absolute); sem
+         altura mínima ele vazaria por cima do conteúdo seguinte. */
+      @media (max-width: 720px) {
+        .ds-exemplo--navbar {
+          min-height: 21rem;
+        }
+      }
+
+      /* Tabelas largas rolam dentro do próprio contêiner em vez de empurrar a
+         página para os lados no celular. */
+      .ds-rolagem {
+        overflow-x: auto;
+      }
+
+      /* 4. Tabelas ---------------------------------------------------------- */
+      .ds-tabela {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--texto-sm);
+      }
+
+      .ds-tabela th,
+      .ds-tabela td {
+        padding: var(--espaco-2) var(--espaco-3);
+        border-bottom: 1px solid var(--cor-borda);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .ds-tabela th {
+        font-weight: 700;
+      }
+
+      .ds-aprovado {
+        color: var(--cor-sucesso);
+        font-weight: 700;
+      }
+
+      .ds-reprovado {
+        color: var(--cor-erro);
+        font-weight: 700;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ============================================================
+         SEÇÃO: NAVEGAÇÃO DA PÁGINA
+         ============================================================ -->
+    <header class="ds-nav">
+      <nav class="container" aria-label="Seções do design system">
+        <span class="ds-nav__marca">Design System</span>
+        <a href="#tokens">Tokens</a>
+        <a href="#tipografia">Tipografia</a>
+        <a href="#elementos">Elementos</a>
+        <a href="#layout">Layout</a>
+        <a href="#componentes">Componentes</a>
+        <a href="#contraste">Contraste</a>
+        <a href="#manter">Como manter</a>
+      </nav>
+    </header>
+    <!-- fim: NAVEGAÇÃO DA PÁGINA -->
+
+    <main>
+      <!-- ============================================================
+           SEÇÃO: APRESENTAÇÃO
+           ============================================================ -->
+      <section class="hero container">
+        <span class="hero__legenda">Documentação de referência</span>
+        <h1 class="hero__titulo">Design System do Blog Culinário</h1>
+        <p class="hero__descricao">
+          Tokens, tipografia e componentes do projeto, mostrados com o próprio
+          <span class="ds-codigo">tokens.css</span> e
+          <span class="ds-codigo">base.css</span>. Como o front-end é HTML + CSS
+          puro, sem build, basta editar um arquivo e recarregar esta página para
+          ver o efeito.
+        </p>
+        <div class="hero__acoes">
+          <a class="botao botao--primario" href="#componentes"
+            >Ver componentes</a
+          >
+          <a class="botao botao--contorno" href="#tokens">Ver tokens</a>
+        </div>
+      </section>
+      <!-- fim: APRESENTAÇÃO -->
+
+      <!-- ============================================================
+           SEÇÃO: 01 TOKENS
+           Fonte: static/css/tokens.css. Os valores abaixo são lidos do CSS em
+           tempo de execução (inicializarValoresDosTokens), então não
+           divergem do arquivo.
+           ============================================================ -->
+      <section class="ds-secao" id="tokens">
+        <div class="container">
+          <p class="ds-secao__numero">01 / Fundação</p>
+          <h2>Tokens</h2>
+          <p>
+            Custom properties em <span class="ds-codigo">:root</span>. Regra do
+            projeto: nenhum outro arquivo CSS declara cor ou tamanho "cru" —
+            tudo referencia uma variável daqui.
+          </p>
+
+          <h3 class="ds-rotulo">Paleta — terracota, creme e verde sálvia</h3>
+          <div class="ds-amostras">
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-primaria)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-primaria</p>
+              <p data-token="--cor-primaria"></p>
+              <p>Cor de ação: links, botões, CTAs</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-primaria-escura)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-primaria-escura</p>
+              <p data-token="--cor-primaria-escura"></p>
+              <p>Hover da cor de ação; texto sobre a clara</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-primaria-clara)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-primaria-clara</p>
+              <p data-token="--cor-primaria-clara"></p>
+              <p>Legenda do hero, placeholder de imagem, mensagem de sucesso</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-destaque)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-destaque</p>
+              <p data-token="--cor-destaque"></p>
+              <p>Verde sálvia. Definido, sem uso direto hoje</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-destaque-escura)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-destaque-escura</p>
+              <p data-token="--cor-destaque-escura"></p>
+              <p>Texto de categoria e de etiqueta</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-fundo)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-fundo</p>
+              <p data-token="--cor-fundo"></p>
+              <p>Creme: fundo da página e da navbar</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-superficie)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-superficie</p>
+              <p data-token="--cor-superficie"></p>
+              <p>Cartões e campos de formulário</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-borda)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-borda</p>
+              <p data-token="--cor-borda"></p>
+              <p>Bordas e divisórias</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-texto)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-texto</p>
+              <p data-token="--cor-texto"></p>
+              <p>Texto principal</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-texto-suave)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-texto-suave</p>
+              <p data-token="--cor-texto-suave"></p>
+              <p>Metadados e legendas</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-texto-invertido)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-texto-invertido</p>
+              <p data-token="--cor-texto-invertido"></p>
+              <p>Texto sobre a cor de ação</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-erro)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-erro</p>
+              <p data-token="--cor-erro"></p>
+              <p>Erro de campo e mensagem de erro</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-amostra__cor"
+                style="background: var(--cor-sucesso)"
+              ></div>
+              <p class="ds-amostra__nome">--cor-sucesso</p>
+              <p data-token="--cor-sucesso"></p>
+              <p>
+                Definido, sem uso hoje (a mensagem de sucesso usa a primária)
+              </p>
+            </div>
+          </div>
+
+          <h3 class="ds-rotulo">
+            Espaçamento (rem — acompanha o zoom do usuário)
+          </h3>
+          <div class="ds-rolagem"><table class="ds-tabela">
+            <tbody>
+              <tr>
+                <th>--espaco-1</th>
+                <td data-token="--espaco-1"></td>
+                <td>
+                  <div class="ds-barra" style="width: var(--espaco-1)"></div>
+                </td>
+              </tr>
+              <tr>
+                <th>--espaco-2</th>
+                <td data-token="--espaco-2"></td>
+                <td>
+                  <div class="ds-barra" style="width: var(--espaco-2)"></div>
+                </td>
+              </tr>
+              <tr>
+                <th>--espaco-3</th>
+                <td data-token="--espaco-3"></td>
+                <td>
+                  <div class="ds-barra" style="width: var(--espaco-3)"></div>
+                </td>
+              </tr>
+              <tr>
+                <th>--espaco-4</th>
+                <td data-token="--espaco-4"></td>
+                <td>
+                  <div class="ds-barra" style="width: var(--espaco-4)"></div>
+                </td>
+              </tr>
+              <tr>
+                <th>--espaco-6</th>
+                <td data-token="--espaco-6"></td>
+                <td>
+                  <div class="ds-barra" style="width: var(--espaco-6)"></div>
+                </td>
+              </tr>
+              <tr>
+                <th>--espaco-8</th>
+                <td data-token="--espaco-8"></td>
+                <td>
+                  <div class="ds-barra" style="width: var(--espaco-8)"></div>
+                </td>
+              </tr>
+              <tr>
+                <th>--espaco-12</th>
+                <td data-token="--espaco-12"></td>
+                <td>
+                  <div class="ds-barra" style="width: var(--espaco-12)"></div>
+                </td>
+              </tr>
+              <tr>
+                <th>--espaco-16</th>
+                <td data-token="--espaco-16"></td>
+                <td>
+                  <div class="ds-barra" style="width: var(--espaco-16)"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table></div>
+
+          <h3 class="ds-rotulo">Raios</h3>
+          <div class="ds-amostras">
+            <div class="ds-amostra">
+              <div class="ds-caixa" style="border-radius: var(--raio-sm)"></div>
+              <p class="ds-amostra__nome">--raio-sm</p>
+              <p data-token="--raio-sm"></p>
+              <p>Definido, sem uso hoje</p>
+            </div>
+            <div class="ds-amostra">
+              <div class="ds-caixa" style="border-radius: var(--raio-md)"></div>
+              <p class="ds-amostra__nome">--raio-md</p>
+              <p data-token="--raio-md"></p>
+              <p>Campos, mensagens</p>
+            </div>
+            <div class="ds-amostra">
+              <div class="ds-caixa" style="border-radius: var(--raio-lg)"></div>
+              <p class="ds-amostra__nome">--raio-lg</p>
+              <p data-token="--raio-lg"></p>
+              <p>Cartões, capa da receita</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-caixa"
+                style="border-radius: var(--raio-pill)"
+              ></div>
+              <p class="ds-amostra__nome">--raio-pill</p>
+              <p data-token="--raio-pill"></p>
+              <p>Botões, etiquetas, legenda do hero</p>
+            </div>
+          </div>
+
+          <h3 class="ds-rotulo">Sombras e transições</h3>
+          <div class="ds-amostras">
+            <div class="ds-amostra">
+              <div
+                class="ds-caixa"
+                style="box-shadow: var(--sombra-cartao); border: none"
+              ></div>
+              <p class="ds-amostra__nome">--sombra-cartao</p>
+              <p>Cartão em repouso</p>
+            </div>
+            <div class="ds-amostra">
+              <div
+                class="ds-caixa"
+                style="box-shadow: var(--sombra-elevada); border: none"
+              ></div>
+              <p class="ds-amostra__nome">--sombra-elevada</p>
+              <p>Cartão no hover</p>
+            </div>
+            <div class="ds-amostra">
+              <p class="ds-amostra__nome">--transicao-rapida</p>
+              <p data-token="--transicao-rapida"></p>
+              <p>Botões (cor de fundo e borda)</p>
+            </div>
+            <div class="ds-amostra">
+              <p class="ds-amostra__nome">--transicao-padrao</p>
+              <p data-token="--transicao-padrao"></p>
+              <p>Cartão (elevação e sombra)</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- fim: 01 TOKENS -->
+
+      <!-- ============================================================
+           SEÇÃO: 02 TIPOGRAFIA
+           Fraunces (serifada) nos títulos, Inter no corpo. Os tamanhos são
+           fluidos (clamp) — redimensione a janela para ver.
+           ============================================================ -->
+      <section class="ds-secao" id="tipografia">
+        <div class="container">
+          <p class="ds-secao__numero">02 / Fundação</p>
+          <h2>Tipografia</h2>
+
+          <div class="ds-rolagem"><table class="ds-tabela">
+            <thead>
+              <tr>
+                <th>Token</th>
+                <th>Valor</th>
+                <th>Amostra</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>--fonte-titulo</td>
+                <td data-token="--fonte-titulo"></td>
+                <td
+                  style="
+                    font-family: var(--fonte-titulo);
+                    font-size: var(--texto-lg);
+                  "
+                >
+                  Receitas para todos os dias
+                </td>
+              </tr>
+              <tr>
+                <td>--fonte-corpo</td>
+                <td data-token="--fonte-corpo"></td>
+                <td style="font-family: var(--fonte-corpo)">
+                  Receitas para todos os dias
+                </td>
+              </tr>
+              <tr>
+                <td>--texto-xs</td>
+                <td data-token="--texto-xs"></td>
+                <td style="font-size: var(--texto-xs)">Categoria da receita</td>
+              </tr>
+              <tr>
+                <td>--texto-sm</td>
+                <td data-token="--texto-sm"></td>
+                <td style="font-size: var(--texto-sm)">
+                  Metadados, rótulos, ajuda
+                </td>
+              </tr>
+              <tr>
+                <td>--texto-base</td>
+                <td data-token="--texto-base"></td>
+                <td style="font-size: var(--texto-base)">Texto de corpo</td>
+              </tr>
+              <tr>
+                <td>--texto-lg</td>
+                <td data-token="--texto-lg"></td>
+                <td style="font-size: var(--texto-lg)">
+                  Título de cartão (h3)
+                </td>
+              </tr>
+              <tr>
+                <td>--texto-xl</td>
+                <td data-token="--texto-xl"></td>
+                <td
+                  style="
+                    font-size: var(--texto-xl);
+                    font-family: var(--fonte-titulo);
+                  "
+                >
+                  Seção (h2)
+                </td>
+              </tr>
+              <tr>
+                <td>--texto-2xl</td>
+                <td data-token="--texto-2xl"></td>
+                <td
+                  style="
+                    font-size: var(--texto-2xl);
+                    font-family: var(--fonte-titulo);
+                  "
+                >
+                  Página (h1)
+                </td>
+              </tr>
+              <tr>
+                <td>--altura-linha-titulo</td>
+                <td data-token="--altura-linha-titulo"></td>
+                <td>Títulos, mais compactos</td>
+              </tr>
+              <tr>
+                <td>--altura-linha-corpo</td>
+                <td data-token="--altura-linha-corpo"></td>
+                <td>Corpo, mais arejado para leitura</td>
+              </tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+      <!-- fim: 02 TIPOGRAFIA -->
+
+      <!-- ============================================================
+           SEÇÃO: 03 ELEMENTOS BASE
+           Fonte: seção 1 do base.css (reset e elementos HTML sem classe).
+           ============================================================ -->
+      <section class="ds-secao" id="elementos">
+        <div class="container">
+          <p class="ds-secao__numero">03 / Fundação</p>
+          <h2>Elementos base</h2>
+          <p>Estilizados direto pelo seletor de tag, sem precisar de classe.</p>
+
+          <div class="ds-exemplo ds-exemplo--fundo">
+            <h1>Título 1 — página</h1>
+            <h2>Título 2 — seção</h2>
+            <h3>Título 3 — cartão</h3>
+            <h4>Título 4</h4>
+            <p>
+              Parágrafo com largura máxima de
+              <span class="ds-codigo">68ch</span>, a medida de leitura
+              confortável para textos longos de receita. Um
+              <a href="#elementos">link</a> usa a cor de ação e fica mais escuro
+              no hover.
+            </p>
+            <ul>
+              <li>Lista não ordenada</li>
+              <li>Segundo item</li>
+            </ul>
+            <ol>
+              <li>Lista ordenada</li>
+              <li>Segundo item</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+      <!-- fim: 03 ELEMENTOS BASE -->
+
+      <!-- ============================================================
+           SEÇÃO: 04 LAYOUT
+           Fonte: seção 2 do base.css.
+           ============================================================ -->
+      <section class="ds-secao" id="layout">
+        <div class="container">
+          <p class="ds-secao__numero">04 / Estrutura</p>
+          <h2>Layout</h2>
+
+          <h3 class="ds-rotulo">
+            .container — largura máxima de 1120px, centralizado
+          </h3>
+          <div class="ds-exemplo ds-exemplo--fundo">
+            <p>
+              Toda página envolve o conteúdo em
+              <span class="ds-codigo">.container</span>: largura de 100%, máximo
+              de 1120px e
+              <span class="ds-codigo">padding-inline: var(--espaco-4)</span>.
+            </p>
+          </div>
+
+          <h3 class="ds-rotulo">
+            .grade-receitas — colunas automáticas de no mínimo 260px
+          </h3>
+          <div class="ds-exemplo ds-exemplo--fundo">
+            <div class="grade-receitas">
+              <div class="ds-caixa"></div>
+              <div class="ds-caixa"></div>
+              <div class="ds-caixa"></div>
+              <div class="ds-caixa"></div>
+            </div>
+          </div>
+
+          <h3 class="ds-rotulo">.cabecalho-pagina — topo de página interna</h3>
+          <div class="ds-exemplo ds-exemplo--fundo">
+            <div class="cabecalho-pagina" style="padding-top: var(--espaco-2)">
+              <h2>Receitas</h2>
+              <p>
+                Todas as receitas publicadas, da mais recente para a mais
+                antiga.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- fim: 04 LAYOUT -->
+
+      <!-- ============================================================
+           SEÇÃO: 05 COMPONENTES
+           HTML copiado dos templates; a fonte de cada um está no rótulo.
+           Seções 3 a 9 do base.css.
+           ============================================================ -->
+      <section class="ds-secao" id="componentes">
+        <div class="container">
+          <p class="ds-secao__numero">05 / Elementos</p>
+          <h2>Componentes</h2>
+
+          <!-- ---------- Navbar ---------- -->
+          <h3 class="ds-rotulo">
+            Navbar — templates/includes/navbar.html (reduza a janela abaixo de
+            720px para testar o menu)
+          </h3>
+          <div class="ds-exemplo ds-exemplo--sem-padding ds-exemplo--navbar">
+            <header class="navbar">
+              <div class="container">
+                <a class="navbar__marca" href="#componentes">Blog Culinário</a>
+
+                <nav aria-label="Navegação principal">
+                  <ul class="navbar__links" id="menu-principal">
+                    <li><a href="#componentes">Início</a></li>
+                    <li><a href="#componentes">Receitas</a></li>
+                    <li>Olá, maria</li>
+                    <li>
+                      <form method="post" action="#componentes">
+                        <button type="submit" class="link-botao">Sair</button>
+                      </form>
+                    </li>
+                  </ul>
+                </nav>
+
+                <button
+                  type="button"
+                  class="navbar__alternador"
+                  aria-label="Abrir menu de navegação"
+                  aria-controls="menu-principal"
+                  aria-expanded="false"
+                >
+                  ☰
+                </button>
+              </div>
+            </header>
+          </div>
+
+          <!-- ---------- Hero ---------- -->
+          <h3 class="ds-rotulo">Hero — nucleo/templates/nucleo/home.html</h3>
+          <div class="ds-exemplo ds-exemplo--fundo">
+            <section class="hero">
+              <span class="hero__legenda">Projeto Educacional Open Source</span>
+              <h2 class="hero__titulo">
+                Código limpo para quem quer dominar o Django.
+              </h2>
+              <p class="hero__descricao">
+                Explore a estrutura completa de um projeto real, com
+                autenticação, templates e boas práticas de segurança.
+              </p>
+              <div class="hero__acoes">
+                <a class="botao botao--primario" href="#componentes"
+                  >Ver receitas</a
+                >
+                <a class="botao botao--contorno" href="#componentes"
+                  >Acompanhar no GitHub</a
+                >
+              </div>
+            </section>
+          </div>
+
+          <!-- ---------- Botões ---------- -->
+          <h3 class="ds-rotulo">Botões — .botao + modificador (BEM)</h3>
+          <div
+            class="ds-exemplo ds-exemplo--fundo"
+            style="
+              display: flex;
+              flex-wrap: wrap;
+              gap: var(--espaco-4);
+              align-items: center;
+            "
+          >
+            <a class="botao botao--primario" href="#componentes"
+              >botao--primario</a
+            >
+            <a class="botao botao--contorno" href="#componentes"
+              >botao--contorno</a
+            >
+            <form method="post" action="#componentes">
+              <button type="submit" class="link-botao">
+                link-botao (parece link, é button)
+              </button>
+            </form>
+          </div>
+
+          <!-- ---------- Cartão de receita ---------- -->
+          <h3 class="ds-rotulo">
+            Cartão de receita — templates/includes/cartao_receita.html (sem
+            imagem: usa o placeholder da cor primária clara)
+          </h3>
+          <div class="ds-exemplo ds-exemplo--fundo">
+            <div class="grade-receitas">
+              <article class="cartao-receita">
+                <a href="#componentes">
+                  <div class="cartao-receita__imagem" aria-hidden="true"></div>
+                </a>
+                <div class="cartao-receita__corpo">
+                  <a class="cartao-receita__categoria" href="#componentes"
+                    >Sobremesas</a
+                  >
+                  <h3 class="cartao-receita__titulo">
+                    <a href="#componentes">Bolo de cenoura</a>
+                  </h3>
+                  <div class="cartao-receita__meta">
+                    <span>60 min</span>
+                    <span>8 porções</span>
+                  </div>
+                </div>
+              </article>
+              <article class="cartao-receita">
+                <a href="#componentes">
+                  <div class="cartao-receita__imagem" aria-hidden="true"></div>
+                </a>
+                <div class="cartao-receita__corpo">
+                  <a class="cartao-receita__categoria" href="#componentes"
+                    >Massas</a
+                  >
+                  <h3 class="cartao-receita__titulo">
+                    <a href="#componentes">Macarrão ao alho e óleo</a>
+                  </h3>
+                  <div class="cartao-receita__meta">
+                    <span>20 min</span>
+                    <span>2 porções</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <!-- ---------- Etiquetas e comentário ---------- -->
+          <h3 class="ds-rotulo">
+            Etiquetas e comentário — receitas/templates/receitas/detalhe.html
+          </h3>
+          <div class="ds-exemplo ds-exemplo--fundo">
+            <ul class="etiquetas">
+              <li><a class="etiqueta" href="#componentes">vegetariano</a></li>
+              <li><a class="etiqueta" href="#componentes">rápido</a></li>
+              <li><a class="etiqueta" href="#componentes">sem glúten</a></li>
+            </ul>
+            <article class="comentario">
+              <p class="comentario__meta">maria &middot; há 2 horas</p>
+              <p>Ficou ótimo, fiz no domingo e a família adorou!</p>
+            </article>
+          </div>
+
+          <!-- ---------- Formulários ---------- -->
+          <h3 class="ds-rotulo">
+            Formulário — usuarios/templates/usuarios/cadastro.html (campo, ajuda
+            e erro)
+          </h3>
+          <div class="ds-exemplo ds-exemplo--fundo">
+            <form class="formulario" onsubmit="return false;">
+              <div class="formulario__campo">
+                <label for="ds-usuario">Nome de usuário</label>
+                <input type="text" id="ds-usuario" value="maria" />
+                <p class="formulario__ajuda">
+                  Letras, números e @/./+/-/_ apenas.
+                </p>
+              </div>
+              <div class="formulario__campo">
+                <label for="ds-senha">Senha</label>
+                <input type="password" id="ds-senha" value="abc" />
+                <p class="formulario__erro">Esta senha é muito curta.</p>
+              </div>
+              <button type="submit" class="botao botao--primario">
+                Criar conta
+              </button>
+            </form>
+          </div>
+
+          <h3 class="ds-rotulo">
+            Formulário de busca — receitas/templates/receitas/lista.html
+          </h3>
+          <div class="ds-exemplo ds-exemplo--fundo">
+            <form
+              class="formulario-busca"
+              role="search"
+              onsubmit="return false;"
+            >
+              <label for="ds-busca">Buscar por título ou ingrediente</label>
+              <input type="search" id="ds-busca" placeholder="Ex.: cenoura" />
+              <button type="submit" class="botao botao--primario">
+                Buscar
+              </button>
+            </form>
+          </div>
+
+          <!-- ---------- Mensagens ---------- -->
+          <h3 class="ds-rotulo">
+            Mensagens — templates/includes/mensagens.html (uma classe por tag do
+            django.contrib.messages)
+          </h3>
+          <div class="ds-exemplo ds-exemplo--fundo">
+            <div class="mensagens">
+              <p class="mensagem mensagem--success">
+                mensagem--success: conta criada com sucesso.
+              </p>
+              <p class="mensagem mensagem--error">
+                mensagem--error: não foi possível entrar.
+              </p>
+              <p class="mensagem mensagem--info">
+                mensagem--info: você saiu da sua conta.
+              </p>
+              <p class="mensagem mensagem--warning">
+                mensagem--warning: sua sessão vai expirar.
+              </p>
+            </div>
+          </div>
+
+          <!-- ---------- Paginação ---------- -->
+          <h3 class="ds-rotulo">
+            Paginação — templates/includes/paginacao.html
+          </h3>
+          <div class="ds-exemplo ds-exemplo--fundo">
+            <nav
+              class="paginacao"
+              aria-label="Paginação de exemplo"
+              style="margin-block: 0"
+            >
+              <a class="botao botao--contorno" href="#componentes"
+                >&larr; Anterior</a
+              >
+              <span>Página 2 de 3</span>
+              <a class="botao botao--contorno" href="#componentes"
+                >Próxima &rarr;</a
+              >
+            </nav>
+          </div>
+
+          <!-- ---------- Rodapé ---------- -->
+          <h3 class="ds-rotulo">Rodapé — templates/includes/rodape.html</h3>
+          <div class="ds-exemplo ds-exemplo--fundo">
+            <footer class="rodape" style="margin-top: 0">
+              <div class="container">
+                <span
+                  >&copy; 2026 Blog Culinário — projeto educacional open source
+                  em Django.</span
+                >
+                <a href="#componentes">Ver código no GitHub</a>
+              </div>
+            </footer>
+          </div>
+
+          <p style="margin-top: var(--espaco-6)">
+            Existe ainda o <span class="ds-codigo">.campo-armadilha</span>
+            (honeypot do comentário, spec 007): fica fora da tela de propósito e
+            por isso não tem exemplo visual.
+          </p>
+        </div>
+      </section>
+      <!-- fim: 05 COMPONENTES -->
+
+      <!-- ============================================================
+           SEÇÃO: 06 CONTRASTE
+           Calculado em tempo de execução a partir dos tokens
+           (inicializarContraste), então acompanha qualquer mudança de cor.
+           Critério: WCAG 2.2 AA, 4,5:1 para texto normal.
+           ============================================================ -->
+      <section class="ds-secao" id="contraste">
+        <div class="container">
+          <p class="ds-secao__numero">06 / Acessibilidade</p>
+          <h2>Contraste das combinações em uso</h2>
+          <p>
+            Cada linha é um par de texto e fundo que o site realmente usa. O
+            resultado é recalculado a cada carregamento.
+          </p>
+          <div class="ds-rolagem"><table class="ds-tabela" id="tabela-contraste">
+            <thead>
+              <tr>
+                <th>Combinação</th>
+                <th>Texto</th>
+                <th>Fundo</th>
+                <th>Razão</th>
+                <th>AA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-texto="--cor-texto" data-fundo="--cor-fundo">
+                <td>Corpo da página</td>
+              </tr>
+              <tr data-texto="--cor-texto-suave" data-fundo="--cor-fundo">
+                <td>Texto suave sobre o fundo</td>
+              </tr>
+              <tr data-texto="--cor-texto-suave" data-fundo="--cor-superficie">
+                <td>Meta do cartão</td>
+              </tr>
+              <tr data-texto="--cor-primaria" data-fundo="--cor-fundo">
+                <td>Links</td>
+              </tr>
+              <tr data-texto="--cor-primaria-escura" data-fundo="--cor-fundo">
+                <td>Link no hover</td>
+              </tr>
+              <tr
+                data-texto="--cor-texto-invertido"
+                data-fundo="--cor-primaria"
+              >
+                <td>Botão primário</td>
+              </tr>
+              <tr
+                data-texto="--cor-texto-invertido"
+                data-fundo="--cor-primaria-escura"
+              >
+                <td>Botão primário no hover</td>
+              </tr>
+              <tr
+                data-texto="--cor-primaria-escura"
+                data-fundo="--cor-primaria-clara"
+              >
+                <td>Legenda do hero e mensagem de sucesso</td>
+              </tr>
+              <tr data-texto="--cor-erro" data-fundo="#f8d7da">
+                <td>Mensagem de erro (fundo fixo no CSS)</td>
+              </tr>
+              <tr data-texto="--cor-erro" data-fundo="--cor-fundo">
+                <td>Erro de campo</td>
+              </tr>
+              <tr
+                data-texto="--cor-destaque-escura"
+                data-fundo="--cor-superficie"
+              >
+                <td>Categoria no cartão</td>
+              </tr>
+              <tr data-texto="--cor-destaque-escura" data-fundo="--cor-fundo">
+                <td>Etiqueta</td>
+              </tr>
+              <tr data-texto="--cor-texto" data-fundo="--cor-borda">
+                <td>Mensagem informativa</td>
+              </tr>
+            </tbody>
+          </table></div>
+
+          <h3 class="ds-rotulo">Observações sobre o CSS atual</h3>
+          <ul>
+            <li>
+              <span class="ds-codigo">.mensagem--error</span> usa o fundo cru
+              <span class="ds-codigo">#f8d7da</span> (base.css, seção 8), o
+              único valor de cor fora dos tokens — contraria a regra do
+              <span class="ds-codigo">tokens.css</span>.
+            </li>
+            <li>
+              Três tokens estão definidos mas nenhum seletor os usa:
+              <span class="ds-codigo">--cor-destaque</span>,
+              <span class="ds-codigo">--cor-sucesso</span> e
+              <span class="ds-codigo">--raio-sm</span>.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <!-- fim: 06 CONTRASTE -->
+
+      <!-- ============================================================
+           SEÇÃO: 07 COMO MANTER
+           ============================================================ -->
+      <section class="ds-secao" id="manter" style="border-bottom: none">
+        <div class="container">
+          <p class="ds-secao__numero">07 / Manutenção</p>
+          <h2>Como manter esta página</h2>
+          <ul>
+            <li>
+              <strong>Mudou um valor em</strong>
+              <span class="ds-codigo">tokens.css</span>
+              (uma cor, um tamanho)? Nada a fazer: esta página lê o arquivo.
+            </li>
+            <li>
+              <strong>Criou um token novo?</strong> Adicione uma amostra na
+              seção Tokens (os valores aparecem sozinhos pelo atributo
+              <span class="ds-codigo">data-token</span>).
+            </li>
+            <li>
+              <strong>Criou ou mudou um componente em</strong>
+              <span class="ds-codigo">base.css</span>? Atualize o exemplo em
+              Componentes copiando o HTML do template indicado no rótulo.
+            </li>
+            <li>
+              <strong>Mudou um par de cores?</strong> Inclua a combinação na
+              tabela de contraste.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <!-- fim: 07 COMO MANTER -->
+    </main>
+
+    <script src="../static/js/interacoes.js" defer></script>
+    <script>
+      // -----------------------------------------------------------------------------
+      // Script da página (embutido)
+      // Lê os tokens do CSS carregado e calcula o contraste das combinações em
+      // uso, para a página nunca divergir de static/css/tokens.css.
+      // -----------------------------------------------------------------------------
+
+      // -----------------------------------------------------------------------------
+      // VALORES DOS TOKENS
+      // Preenche todo elemento com [data-token] com o valor atual da custom
+      // property correspondente (ex.: "#c1440e", "0.25rem", "250ms ease").
+      // -----------------------------------------------------------------------------
+      function inicializarValoresDosTokens() {
+        const estilos = getComputedStyle(document.documentElement);
+
+        document.querySelectorAll("[data-token]").forEach((elemento) => {
+          const valor = estilos.getPropertyValue(elemento.dataset.token).trim();
+          elemento.textContent = valor || "(não definido)";
+        });
+      }
+
+      // -----------------------------------------------------------------------------
+      // CONTRASTE (WCAG 2.2)
+      // luminanciaRelativa() e razaoDeContraste() seguem a fórmula do WCAG;
+      // todos os tokens de cor do projeto são hexadecimais de 6 dígitos.
+      // -----------------------------------------------------------------------------
+      function luminanciaRelativa(hex) {
+        const canais = [1, 3, 5].map(
+          (i) => parseInt(hex.slice(i, i + 2), 16) / 255,
+        );
+        const [r, g, b] = canais.map((c) =>
+          c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4,
+        );
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      }
+
+      function razaoDeContraste(hexA, hexB) {
+        const [claro, escuro] = [
+          luminanciaRelativa(hexA),
+          luminanciaRelativa(hexB),
+        ].sort((a, b) => b - a);
+        return (claro + 0.05) / (escuro + 0.05);
+      }
+
+      // Aceita o nome de um token ("--cor-texto") ou uma cor literal ("#f8d7da").
+      function resolverCor(valor) {
+        if (!valor.startsWith("--")) {
+          return valor;
+        }
+        return getComputedStyle(document.documentElement)
+          .getPropertyValue(valor)
+          .trim();
+      }
+
+      function inicializarContraste() {
+        document
+          .querySelectorAll("#tabela-contraste tbody tr")
+          .forEach((linha) => {
+            const texto = resolverCor(linha.dataset.texto);
+            const fundo = resolverCor(linha.dataset.fundo);
+            const razao = razaoDeContraste(texto, fundo);
+            const passou = razao >= 4.5;
+
+            linha.insertAdjacentHTML(
+              "beforeend",
+              `<td>${texto}</td><td>${fundo}</td>` +
+                `<td>${razao.toFixed(2)}:1</td>` +
+                `<td class="${passou ? "ds-aprovado" : "ds-reprovado"}">${passou ? "Passa" : "Falha"}</td>`,
+            );
+          });
+      }
+
+      // -----------------------------------------------------------------------------
+      // PONTO DE ENTRADA ÚNICO
+      // -----------------------------------------------------------------------------
+      document.addEventListener("DOMContentLoaded", () => {
+        inicializarValoresDosTokens();
+        inicializarContraste();
+      });
+    </script>
+  </body>
+</html>
