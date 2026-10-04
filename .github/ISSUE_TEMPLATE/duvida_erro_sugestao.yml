@@ -1,0 +1,43 @@
+# Formulário de dúvida, erro ou sugestão — consumido pelo GitHub ao abrir uma
+# issue. É o canal que o README convida o aprendiz a usar.
+name: "Dúvida, erro ou sugestão"
+description: "Travou em algum passo, achou um erro ou teve uma ideia? Conta pra mim"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por abrir esta issue! Quanto mais contexto você der, mais fácil
+        é ajudar, e a resposta também ajuda quem tiver a mesma dúvida depois.
+
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: "Sobre o quê?"
+      options:
+        - "Dúvida sobre o código"
+        - "Erro ao rodar o projeto"
+        - "Sugestão de melhoria"
+    validations:
+      required: true
+
+  - type: textarea
+    id: descricao
+    attributes:
+      label: "Descreva"
+      description: "Explique com as suas palavras. Se for um erro, diga o que você esperava e o que aconteceu."
+    validations:
+      required: true
+
+  - type: textarea
+    id: ambiente
+    attributes:
+      label: "Seu ambiente"
+      description: "Opcional. Ajuda a reproduzir o problema."
+      placeholder: "Sistema operacional, versão do Python, comando que você rodou"
+
+  - type: textarea
+    id: saida
+    attributes:
+      label: "Mensagem de erro ou captura de tela"
+      description: "Opcional. Cole o erro completo."
+      render: shell
