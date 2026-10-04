@@ -1,0 +1,3 @@
+# Configuração dos formulários de issue — consumido pelo GitHub.
+# Sem issue em branco: o formulário de dúvida, erro ou sugestão cobre o convite do README.
+blank_issues_enabled: false
