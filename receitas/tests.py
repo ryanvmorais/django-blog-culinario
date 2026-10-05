@@ -14,6 +14,7 @@ vazarem de um teste para o outro.
 from __future__ import annotations
 
 import time
+from datetime import timedelta
 from typing import Any
 from uuid import uuid4
 
@@ -26,6 +27,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.deletion import ProtectedError
 from django.test import Client
 from django.urls import reverse
+from django.utils import timezone
 
 from .forms import _ASSINATURA_SALT
 from .models import Categoria, Comentario, Receita, Tag
@@ -277,6 +279,11 @@ def test_listagem_mostra_somente_publicadas(client: Client) -> None:
 def test_listagem_ordena_mais_recentes_primeiro(client: Client) -> None:
     mais_antiga = _receita(titulo="Receita antiga", publicado=True)
     mais_nova = _receita(titulo="Receita nova", publicado=True)
+    # O auto_now_add empata quando as duas receitas nascem no mesmo tick do relógio
+    # (Windows com Python < 3.13, ~15 ms); datas explícitas fixam a ordem.
+    Receita.objects.filter(pk=mais_antiga.pk).update(
+        criado_em=timezone.now() - timedelta(days=1)
+    )
 
     resposta = client.get(reverse("receitas:lista"))
 
