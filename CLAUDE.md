@@ -56,6 +56,8 @@ templates/                 # base.html + includes/ (navbar, rodapé)
 static/css/                # design system: tokens.css (variáveis) + base.css
 specs/                     # spec-driven development — ver specs/README.md
 docs/stack.md              # o que compõe a stack, por que e o que estudar
+docs/design-system.html    # catálogo visual (tokens, tipografia, componentes); abra direto no navegador — usa o tokens.css e o base.css do site
+.github/                   # CI (ci.yml), Dependabot (uv + github-actions), formulário de issue e template de PR
 ```
 
 Cada app novo do domínio segue o padrão de `nucleo`: `views.py` com funções
