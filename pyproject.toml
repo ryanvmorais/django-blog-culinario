@@ -13,7 +13,7 @@
 name = "blog-culinario"
 version = "0.1.0"
 description = "Blog culinário multipáginas em Django — projeto educacional para aprender a construir aplicações web com Python."
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 dependencies = [
     "django>=6.1.1",
     "django-environ>=0.14.0",
@@ -34,7 +34,7 @@ dev = [
 # --- Lint (ruff, substitui flake8 + isort) ----------------------------------
 [tool.ruff]
 line-length = 88
-target-version = "py314"
+target-version = "py312"
 exclude = ["**/migrations/*.py"]  # geradas pelo Django, não seguem o estilo do projeto
 
 [tool.ruff.lint]
@@ -49,12 +49,12 @@ known-first-party = ["blog_culinario", "nucleo", "receitas", "usuarios"]
 # --- Formatador (black) ------------------------------------------------------
 [tool.black]
 line-length = 88
-target-version = ["py314"]
+target-version = ["py312"]
 extend-exclude = "migrations/"
 
 # --- Type checker (mypy + django-stubs) --------------------------------------
 [tool.mypy]
-python_version = "3.14"
+python_version = "3.12"
 plugins = ["mypy_django_plugin.main"]
 exclude = ["migrations/"]
 

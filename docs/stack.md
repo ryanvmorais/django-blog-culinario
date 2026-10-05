@@ -27,6 +27,12 @@ SQLite (db.sqlite3)
 **Por que esta:** é a linguagem que o projeto se propõe a ensinar (blog
 educacional de Python/Django); não havia alternativa em avaliação.
 
+**Qual versão:** o piso é o 3.12, que é a versão do servidor no PythonAnywhere
+(a plataforma lista Python só até o 3.13) e o mínimo que o Django 6.1 aceita. O CI
+roda o projeto no 3.12 e no 3.14 (a versão estável mais atual), e o `ruff`, o
+`black` e o `mypy` apontam para o 3.12, para o próprio lint barrar sintaxe que o
+piso não tem.
+
 **O que estudar:** type hints modernos (`X | None`, `list[str]`), f-strings,
 compreensões de lista/dict, o módulo `pathlib`.
 

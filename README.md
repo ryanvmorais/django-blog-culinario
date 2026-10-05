@@ -2,7 +2,7 @@
 
 # 🍲 Blog Culinário | Blog Multipáginas Educacional em Django
 
-![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)
 ![Django](https://img.shields.io/badge/Django-6.1-092E20?logo=django&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-banco-003B57?logo=sqlite&logoColor=white)
 ![uv](https://img.shields.io/badge/deps-uv-DE5FE9)
@@ -52,7 +52,7 @@ Para garantir a melhor experiência de aprendizado e a execução correta de tod
 
 | Ferramenta | Descrição | Badge |
 | :--- | :--- | :--- |
-| **Python 3.14** | Linguagem base do projeto. | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white) |
+| **Python 3.12+** | Linguagem base do projeto. | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white) |
 | **Django 6.1** | Framework web "com baterias incluídas" para toda a lógica, ORM e admin. | ![Django](https://img.shields.io/badge/Django-092E20?style=flat&logo=django&logoColor=white) |
 | **SQLite** | Banco de dados relacional — um arquivo, zero configuração. | ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white) |
 | **uv** | Gerenciador de dependências e ambientes virtuais, com lockfile reprodutível. | ![uv](https://img.shields.io/badge/uv-DE5FE9?style=flat&logo=uv&logoColor=white) |
