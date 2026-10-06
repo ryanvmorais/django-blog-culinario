@@ -44,6 +44,6 @@ porque o Prettier havia reformatado `nucleo/templates/nucleo/home.html`
 em duas linhas — o lexer de template do Django não reconhece uma tag
 `{% ... %}` com quebra de linha no meio (regex sem `DOTALL`). Corrigido em
 duas partes: `.prettierignore` na raiz do projeto (mesmo padrão do
-`hub-ryan-morais`) para o Prettier nunca mais tocar `templates/`, e a tag
+`site-ryan-morais`) para o Prettier nunca mais tocar `templates/`, e a tag
 quebrada foi desfeita para uma linha só, sem alterar o texto/copy que o
 Ryan estava editando.
