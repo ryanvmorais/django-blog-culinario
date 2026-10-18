@@ -192,8 +192,8 @@ faz, como ler um erro `[import-untyped]`/`[arg-type]`.
 
 | Peça | Papel |
 |---|---|
-| Fraunces (Google Fonts) | Tipografia de título do design system — serifada, editorial. |
-| Inter (Google Fonts) | Tipografia de corpo — legibilidade em tela. |
+| Fraunces | Tipografia de título do design system — serifada, editorial. Hospedada em `static/fonts/` (licença OFL), não no Google Fonts: sem requisição a terceiros. |
+| Inter | Tipografia de corpo — legibilidade em tela. Também hospedada em `static/fonts/`; as duas são declaradas em `static/css/fontes.css`. |
 | `django.contrib.humanize` | Filtros de template (`timesince`, `intcomma`) nas páginas de receita. |
 | WhiteNoise (dev) | Também ativo em desenvolvimento — evita duas configurações de estático divergentes. |
 

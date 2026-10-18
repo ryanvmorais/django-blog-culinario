@@ -50,6 +50,7 @@ Nenhuma fase avança sem o "ok" explícito do Ryan. Comandos: `/spec nova <nome>
 | [005-comentarios](005-comentarios/requirements.md) | Comentários em receitas (autenticado) + moderação no admin | concluído |
 | [006-limitacao-de-taxa](006-limitacao-de-taxa/requirements.md) | Rate limiting em login e criação de comentários (achado da auditoria de segurança) | concluído |
 | [007-honeypot-e-time-trap](007-honeypot-e-time-trap/requirements.md) | Honeypot + time-trap no formulário de comentário (extensão da 006) | concluído |
+| [008-correcoes-de-interface](008-correcoes-de-interface/requirements.md) | Correções da auditoria de interface: botões, alinhamento, acessibilidade, fontes locais, tema escuro e a abertura da home | em andamento |
 
 ## Notas de manutenção
 

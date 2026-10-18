@@ -54,8 +54,9 @@ blog_culinario/limitacao.py # rate limit por IP via cache do Django (login e com
 nucleo/                    # home, sobre, contato — páginas institucionais
 receitas/                  # domínio principal: Receita, Categoria, Tag, Comentario
 usuarios/                  # autenticação (django.contrib.auth)
-templates/                 # base.html + includes/ (navbar, rodapé)
-static/css/                # design system: tokens.css (variáveis) + base.css
+templates/                 # base.html + includes/ (navbar, rodapé) + 404, 403 e 500
+static/css/                # design system: tokens.css (variáveis e tema escuro), fontes.css (@font-face) e base.css
+static/fonts/              # Inter e Fraunces (woff2 variável, subconjunto latin, licença OFL)
 specs/                     # spec-driven development — ver specs/README.md
 docs/stack.md              # o que compõe a stack, por que e o que estudar
 docs/design-system.html    # catálogo visual (tokens, tipografia, componentes); abra direto no navegador — usa o tokens.css e o base.css do site
@@ -72,6 +73,29 @@ simples primeiro, `urls.py` com `app_name` namespaced, templates em
   completa e as exceções em `/idioma`.
 - **Estilo de arquivo** (docstrings, type hints, seções, comentários): sempre
   consulte `/estilo-arquivos` antes de criar ou editar um arquivo.
+
+## Interface (spec 008)
+
+Regras que a auditoria de interface de 18/10/2026 deixou, guardadas por
+`nucleo/test_interface.py` e `nucleo/test_tema_escuro.py`:
+
+- **Botão:** `.botao` herda a fonte (`font: inherit`: o `<button>` do navegador
+  não herda e saía em Arial 13 px), tem o rótulo no centro da caixa e 48 px de
+  altura. Em formulário, largura dos campos no celular e tamanho do rótulo acima
+  de 720 px. Um botão novo passa por `auditar_proporcoes.py` (skill
+  `/auditoria-interface`).
+- **Alinhamento:** o que é curto e isolado (aviso, formulário de acesso, botão de
+  largura total) fica no centro; leitura (receita, comentários, rótulo de campo)
+  à esquerda. Aviso que acompanha um título à esquerda segue o título.
+- **Cor só por token:** nenhum valor de cor fora do `tokens.css`. O tema escuro é
+  um bloco `prefers-color-scheme: dark` com variáveis; mudou uma cor, mude as duas
+  paletas (o `test_tema_escuro.py` confere o contraste de cada par).
+- **Borda de campo:** `--cor-borda-campo` (3:1); `--cor-borda` é só divisória.
+- **Fontes:** hospedadas em `static/fonts/`; não volte ao Google Fonts (LGPD).
+- **Cartão:** um link por cartão para teclado e leitor (a foto é `aria-hidden`);
+  a lista leva um `h2` oculto entre o `h1` e os `h3`.
+- **Mensagens:** na página da receita ficam dentro de `#comentarios`.
+- **Erros:** o 500 é HTML completo, sem herdar o `base.html`.
 
 ## Qualidade e automação
 
