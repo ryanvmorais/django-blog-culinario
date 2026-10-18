@@ -1,6 +1,6 @@
 ---
 feature: Correções da auditoria de interface
-status: em andamento
+status: concluído
 data: 2026-10-18
 relacionado:
   - 000-fundacao/requirements.md

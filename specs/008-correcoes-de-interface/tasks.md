@@ -1,6 +1,6 @@
 ---
 feature: Correções da auditoria de interface
-status: em andamento
+status: concluído
 data: 2026-10-18
 relacionado:
   - 000-fundacao/requirements.md
@@ -53,7 +53,7 @@ origem: concepcao
 - [x] `docs/design-system.html`: token novo, botões, estado vazio, hero e tema escuro; contraste do escuro. — RNF-03
 - [x] `README.md`, `CLAUDE.md`, `docs/stack.md` e `specs/README.md`: índice e regras novas. — RNF-03
 - [x] Verificação em Chrome real: axe, Tab, CLS e `auditar_proporcoes.py` antes e depois. — RF-01 a RF-17
-- [ ] `assets/home-preview.png`: refazer a capa da home depois que as seis receitas reais, com fotos, entrarem no blog. — RF-01
+- [x] `assets/blog-culinario-home-receitas-simples-desktop.webp`: capa da home refeita com as seis receitas reais e fotos (2560x2120, WebP q90, 474 KiB; substitui o `home-preview.png`). — RF-01
 - [x] Portão de qualidade completo. — 128 passed, ruff/black/mypy verdes; `manage.py check` sem problemas
 
 ### Verificação em Chrome real (18/10/2026)

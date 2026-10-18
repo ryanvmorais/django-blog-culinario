@@ -1,4 +1,4 @@
-![Blog Culinário — página inicial do projeto](assets/home-preview.png)
+![Blog Culinário: página inicial com receitas simples para todos os dias](assets/blog-culinario-home-receitas-simples-desktop.webp)
 
 # 🍲 Blog Culinário | Blog Multipáginas Educacional em Django
 
