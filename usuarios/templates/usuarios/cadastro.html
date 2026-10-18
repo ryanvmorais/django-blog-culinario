@@ -3,7 +3,7 @@
 {% block titulo %}Criar conta — Blog Culinário{% endblock %}
 
 {% block content %}
-  <section class="container cabecalho-pagina">
+  <section class="container cabecalho-pagina pagina-formulario">
     <h1>Criar conta</h1>
 
     <form class="formulario" method="post" novalidate>
@@ -13,7 +13,8 @@
           {{ field.label_tag }}
           {{ field }}
           {% if field.help_text %}
-            <p class="formulario__ajuda">{{ field.help_text }}</p>
+            {# <div>, não <p>: a ajuda de senha é uma <ul>. O id é o que o aria-describedby do campo aponta. #}
+            <div class="formulario__ajuda" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</div>
           {% endif %}
           {% for erro in field.errors %}
             <p class="formulario__erro">{{ erro }}</p>

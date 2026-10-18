@@ -4,7 +4,7 @@
      redirect (login/logout/cadastro) porque o framework guarda na sessão.
      ============================================================ -->
 {% if messages %}
-  <div class="container mensagens">
+  <div class="container mensagens" role="status">
     {% for message in messages %}
       <p class="mensagem mensagem--{{ message.tags }}">{{ message }}</p>
     {% endfor %}

@@ -2,14 +2,14 @@
 {% comment %}
   Layout raiz do Blog Culinário. Toda página estende este template e só
   sobrescreve os blocos nomeados (titulo, descricao, content, css_extra,
-  js_extra) -- estrutura de <head>, navbar, mensagens e rodapé ficam aqui,
+  js_extra, mensagens) -- estrutura de <head>, navbar, mensagens e rodapé ficam aqui,
   compartilhadas por todas as páginas (spec 000).
 {% endcomment %}
 <!doctype html>
 <html lang="pt-br">
   <!-- ============================================================
        SEÇÃO: HEAD
-       Meta tags, fontes (Google Fonts) e folhas de estilo. Os blocos
+       Meta tags, ícone, fontes locais e folhas de estilo. Os blocos
        abaixo podem ser sobrescritos por templates filhos.
        ============================================================ -->
   <head>
@@ -18,16 +18,20 @@
     <title>{% block titulo %}Blog Culinário{% endblock %}</title>
     <meta
       name="description"
-      content="{% block descricao %}Blog culinário multipáginas construído em Django — projeto educacional para quem está aprendendo Python.{% endblock %}"
+      content="{% block descricao %}Receitas simples para todos os dias, com comentários da comunidade. Por dentro, um projeto Django educacional e aberto.{% endblock %}"
     />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml" />
+
+    {# Fontes hospedadas no projeto, sem requisição ao Google (spec 008, RF-14). #}
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="{% static 'fonts/inter-latin.woff2' %}"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
-
+    <link rel="stylesheet" href="{% static 'css/fontes.css' %}" />
     <link rel="stylesheet" href="{% static 'css/tokens.css' %}" />
     <link rel="stylesheet" href="{% static 'css/base.css' %}" />
     {% block css_extra %}{% endblock %}
@@ -35,7 +39,7 @@
   <!-- fim: HEAD -->
   <body>
     {% include "includes/navbar.html" %}
-    {% include "includes/mensagens.html" %}
+    {% block mensagens %}{% include "includes/mensagens.html" %}{% endblock %}
 
     <!-- ============================================================
          SEÇÃO: CONTEÚDO

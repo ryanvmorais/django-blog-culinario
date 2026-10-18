@@ -3,6 +3,8 @@
 
 {% block titulo %}{{ receita.titulo }} — Blog Culinário{% endblock %}
 {% block descricao %}{{ receita.resumo }}{% endblock %}
+{# As mensagens desta página aparecem junto do formulário de comentário (spec 008, RF-05). #}
+{% block mensagens %}{% endblock %}
 
 {% block content %}
   <article class="container cabecalho-pagina">
@@ -52,6 +54,7 @@
        ============================================================ -->
   <section class="container" id="comentarios">
     <h2>Comentários</h2>
+    {% include "includes/mensagens.html" %}
 
     {% for comentario in comentarios %}
       <article class="comentario">

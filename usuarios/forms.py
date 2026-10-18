@@ -15,7 +15,10 @@ class FormularioCadastro(UserCreationForm):
     classe base — este formulário só acrescenta o campo de email.
     """
 
-    email = forms.EmailField(required=False)
+    email = forms.EmailField(
+        required=False,
+        widget=forms.EmailInput(attrs={"autocomplete": "email"}),
+    )
 
     class Meta(UserCreationForm.Meta):
         model = User

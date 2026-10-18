@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block titulo %}Acesso negado — Blog Culinário{% endblock %}
+{% block descricao %}Você não tem permissão para abrir esta página.{% endblock %}
+
+{% block content %}
+  <!-- ============================================================
+       SEÇÃO: ACESSO NEGADO
+       Mostrada pelo Django com DEBUG=False (PermissionDenied e falha de
+       CSRF) no lugar da página padrão em inglês (spec 008, RF-04).
+       ============================================================ -->
+  <section class="hero container">
+    <span class="hero__legenda">Erro 403</span>
+    <h1 class="hero__titulo">Você não pode abrir esta página.</h1>
+    <p class="hero__descricao">
+      Entre na sua conta ou volte para as receitas. Se você acabou de enviar
+      um formulário, recarregue a página e tente de novo.
+    </p>
+    <div class="hero__acoes">
+      <a class="botao botao--primario" href="{% url 'usuarios:entrar' %}">Entrar</a>
+      <a class="botao botao--contorno" href="{% url 'nucleo:home' %}">Voltar ao início</a>
+    </div>
+  </section>
+  <!-- fim: ACESSO NEGADO -->
+{% endblock %}

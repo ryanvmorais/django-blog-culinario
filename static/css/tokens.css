@@ -27,13 +27,17 @@
 
   --cor-fundo: #fbf4ea;
   --cor-superficie: #ffffff;
-  --cor-borda: #e8dcc8;
+  --cor-borda: #e8dcc8; /* divisórias e cartões: linha decorativa, 1,24:1 basta */
+  /* Borda de campo de formulário é componente de interface: a WCAG 1.4.11 pede 3:1
+     contra o fundo. 4,19:1 sobre a superfície branca e 3,83:1 sobre o creme (spec 008, RF-08). */
+  --cor-borda-campo: #8a7968;
 
   --cor-texto: #2f2620;
   --cor-texto-suave: #6b5d52;
   --cor-texto-invertido: #fbf4ea;
 
   --cor-erro: #b3261e;
+  --cor-erro-fundo: #f8d7da; /* caixa de mensagem de erro; vira token para o tema escuro (spec 008, RF-15) */
   --cor-sucesso: #2f6b3a;
 
   /* 2. Tipografia -------------------------------------------------------------
@@ -68,8 +72,10 @@
   --raio-lg: 20px;
   --raio-pill: 999px;
 
-  --sombra-cartao: 0 1px 2px rgba(47, 38, 32, 0.06), 0 8px 24px rgba(47, 38, 32, 0.08);
-  --sombra-elevada: 0 4px 8px rgba(47, 38, 32, 0.08), 0 16px 40px rgba(47, 38, 32, 0.14);
+  --sombra-cartao:
+    0 1px 2px rgba(47, 38, 32, 0.06), 0 8px 24px rgba(47, 38, 32, 0.08);
+  --sombra-elevada:
+    0 4px 8px rgba(47, 38, 32, 0.08), 0 16px 40px rgba(47, 38, 32, 0.14);
 
   /* 4. Transições --------------------------------------------------------- */
   --transicao-rapida: 150ms ease;
