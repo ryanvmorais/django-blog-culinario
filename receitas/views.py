@@ -28,7 +28,22 @@ from .forms import (
     eh_envio_suspeito_de_bot,
     gerar_carimbo_de_tempo,
 )
-from .models import Receita
+from .models import Categoria, Receita, Tag
+
+
+def _nome_do_filtro(modelo: type[Categoria] | type[Tag], slug: str) -> str:
+    """Devolve o nome de exibição de uma categoria ou tag a partir do slug.
+
+    Args:
+        modelo (type[Categoria] | type[Tag]): modelo com ``slug`` e ``nome``.
+        slug (str): slug vindo da querystring; vazio significa "sem filtro".
+
+    Returns:
+        str: o ``nome`` do registro, ou ``""`` se não há slug ou ele não existe.
+    """
+    if not slug:
+        return ""
+    return modelo.objects.filter(slug=slug).values_list("nome", flat=True).first() or ""
 
 
 class ReceitaListView(ListView):
@@ -83,8 +98,12 @@ class ReceitaListView(ListView):
         Returns:
             dict[str, Any]: contexto do template, com ``termo_busca``,
             ``categoria_selecionada``, ``tag_selecionada`` (ecoam a
-            querystring atual) e ``querystring`` (GET sem ``page``,
-            urlencoded, usada pela paginação para preservar o filtro).
+            querystring atual), ``categoria_nome`` e ``tag_nome`` (o nome
+            de exibição do filtro, para a frase "N receitas em X"; vazios
+            quando o slug não existe ou não há filtro), ``filtro_ativo``
+            (``True`` se há busca, categoria ou tag) e ``querystring``
+            (GET sem ``page``, urlencoded, usada pela paginação para
+            preservar o filtro).
         """
         contexto = super().get_context_data(**kwargs)
 
@@ -95,6 +114,17 @@ class ReceitaListView(ListView):
         contexto["categoria_selecionada"] = self.request.GET.get("categoria", "")
         contexto["tag_selecionada"] = self.request.GET.get("tag", "")
         contexto["querystring"] = parametros.urlencode()
+        # Só consulta o nome quando há filtro; sem filtro a listagem continua
+        # em 3 queries (RNF-01 da spec 002).
+        contexto["categoria_nome"] = _nome_do_filtro(
+            Categoria, contexto["categoria_selecionada"]
+        )
+        contexto["tag_nome"] = _nome_do_filtro(Tag, contexto["tag_selecionada"])
+        contexto["filtro_ativo"] = bool(
+            contexto["termo_busca"]
+            or contexto["categoria_selecionada"]
+            or contexto["tag_selecionada"]
+        )
         return contexto
 
 

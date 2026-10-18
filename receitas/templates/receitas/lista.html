@@ -6,7 +6,17 @@
 {% block content %}
   <section class="container cabecalho-pagina">
     <h1>Receitas</h1>
-    <p>Todas as receitas publicadas, da mais recente para a mais antiga.</p>
+    {% if receitas and filtro_ativo %}
+      <p>
+        {{ paginator.count }} receita{{ paginator.count|pluralize }}
+        {% if categoria_nome %}em <strong>{{ categoria_nome }}</strong>{% endif %}
+        {% if tag_nome %}com a tag <strong>{{ tag_nome }}</strong>{% endif %}
+        {% if termo_busca %}para <strong>"{{ termo_busca }}"</strong>{% endif %}
+        &middot; <a href="{% url 'receitas:lista' %}">Limpar filtro</a>
+      </p>
+    {% else %}
+      <p>Todas as receitas publicadas, da mais recente para a mais antiga.</p>
+    {% endif %}
 
     <form class="formulario-busca" method="get" role="search">
       <label for="campo-busca">Buscar por título ou ingrediente</label>
@@ -29,19 +39,21 @@
 
   <section class="container">
     {% if receitas %}
+      {# Sem este título, a página pularia do h1 para o h3 dos cartões (spec 008, RF-03). #}
+      <h2 class="so-leitor-de-tela">Lista de receitas</h2>
       <div class="grade-receitas">
         {% for receita in receitas %}
           {% include "includes/cartao_receita.html" %}
         {% endfor %}
       </div>
     {% elif termo_busca or categoria_selecionada or tag_selecionada %}
-      <p>
+      <p class="estado-vazio">
         Nenhuma receita encontrada
         {% if termo_busca %}para "{{ termo_busca }}"{% endif %}.
         <a href="{% url 'receitas:lista' %}">Ver todas as receitas</a>
       </p>
     {% else %}
-      <p>Nenhuma receita publicada ainda — volte em breve.</p>
+      <p class="estado-vazio">Nenhuma receita publicada ainda — volte em breve.</p>
     {% endif %}
   </section>
 

@@ -2,29 +2,29 @@
 
 {% block titulo %}Blog Culinário — receitas para todos os dias{% endblock %}
 
+{% comment %}
+  Por fora, um blog de receitas; por dentro, um projeto Django aberto para
+  estudo. A abertura fala de comida; o Django aparece na seção "Por dentro"
+  (spec 008, RF-01).
+{% endcomment %}
+
 {% block content %}
   <!-- ============================================================
        SEÇÃO: HERO
        ============================================================ -->
   <section class="hero container">
-    <span class="hero__legenda">Projeto Educacional Open Source</span>
-    <h1 class="hero__titulo">Código limpo para quem quer dominar o Django.</h1>
+    <span class="hero__legenda">Blog culinário</span>
+    <h1 class="hero__titulo">Receitas simples para todos os dias.</h1>
     <p class="hero__descricao">
-      Este Blog Culinário é o seu ponto de partida perfeito para entender a
-      fundo o ecossistema Python/Django. Explore a estrutura completa de um
-      projeto real — com autenticação, templates e boas práticas de segurança
-      prontas para você consultar e aplicar nos seus próprios sistemas.
+      Do bolo de cenoura ao jantar de terça-feira: receitas com ingredientes e
+      modo de preparo claros, para você cozinhar sem complicação. Cozinhe,
+      comente e conte como ficou.
     </p>
     <div class="hero__acoes">
       <a class="botao botao--primario" href="{% url 'receitas:lista' %}">Ver receitas</a>
-      <a
-        class="botao botao--contorno"
-        href="https://github.com/ryanvmorais/django-blog-culinario"
-        target="_blank"
-        rel="noopener"
-      >
-        Acompanhar no GitHub
-      </a>
+      {% if not user.is_authenticated %}
+        <a class="botao botao--contorno" href="{% url 'usuarios:cadastro' %}">Criar minha conta</a>
+      {% endif %}
     </div>
   </section>
   <!-- fim: HERO -->
@@ -43,8 +43,33 @@
         {% endfor %}
       </div>
     {% else %}
-      <p>Nenhuma receita publicada ainda — volte em breve.</p>
+      <p class="estado-vazio">Nenhuma receita publicada ainda — volte em breve.</p>
     {% endif %}
   </section>
   <!-- fim: RECEITAS RECENTES -->
+
+  <!-- ============================================================
+       SEÇÃO: POR DENTRO
+       Onde o blog diz o que ele é por trás das receitas: um projeto Django
+       educacional e aberto (spec 008, RF-01).
+       ============================================================ -->
+  <section class="container" id="por-dentro">
+    <div class="painel-destaque">
+      <h2>Por dentro, um projeto Django</h2>
+      <p>
+        Este blog também é material de estudo. Por trás das receitas há uma
+        aplicação Django completa, com modelagem de domínio, autenticação,
+        comentários e segurança aplicada, em código aberto e comentado.
+      </p>
+      <a
+        class="botao botao--contorno"
+        href="https://github.com/ryanvmorais/django-blog-culinario"
+        target="_blank"
+        rel="noopener"
+      >
+        Ver o código no GitHub
+      </a>
+    </div>
+  </section>
+  <!-- fim: POR DENTRO -->
 {% endblock %}

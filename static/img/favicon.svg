@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Blog Culinário">
+  <rect width="64" height="64" rx="14" fill="#c1440e" />
+  <path d="M12 34h40a20 20 0 0 1-20 20 20 20 0 0 1-20-20z" fill="#fbf4ea" />
+  <path d="M24 26c-3-4 3-6 0-11M32 26c-3-4 3-6 0-11M40 26c-3-4 3-6 0-11" fill="none" stroke="#fbf4ea" stroke-width="3" stroke-linecap="round" />
+</svg>

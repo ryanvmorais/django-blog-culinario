@@ -17,6 +17,7 @@
  *   8. Autenticação e mensagens
  *   9. Rodapé
  *   10. Responsivo (mobile)
+ *   11. Movimento reduzido
  */
 
 /* 1. Reset e elementos base -------------------------------------------------
@@ -109,6 +110,45 @@ ol {
   padding-block: var(--espaco-12) var(--espaco-4);
 }
 
+/* Coluna de formulário isolado (entrar, criar conta): centrada na tela, com o
+   título e a frase de troca de página no centro. Os rótulos dos campos seguem à
+   esquerda, que é como se lê um formulário (spec 008, RF-17, ADR-5). */
+.pagina-formulario {
+  max-width: calc(420px + 2 * var(--espaco-4));
+  text-align: center;
+}
+
+.pagina-formulario .formulario {
+  margin-inline: auto;
+  text-align: left;
+}
+
+.pagina-formulario > p {
+  margin-inline: auto;
+  margin-top: var(--espaco-4);
+}
+
+/* Aviso curto e isolado ("nenhuma receita", "ainda não há comentários"): no centro
+   de um bloco com respiro, não colado à esquerda de uma área larga. */
+.estado-vazio {
+  margin: var(--espaco-8) auto;
+  text-align: center;
+}
+
+/* Texto só para leitor de tela. Dá nome a uma região sem aparecer, por exemplo o
+   título que evita o salto do h1 para o h3 dos cartões. */
+.so-leitor-de-tela {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Formulário de busca da listagem (spec 003). */
 .formulario-busca {
   display: flex;
@@ -127,7 +167,7 @@ ol {
 .formulario-busca input[type="search"] {
   flex: 1 1 240px;
   padding: var(--espaco-3);
-  border: 1px solid var(--cor-borda);
+  border: 1px solid var(--cor-borda-campo);
   border-radius: var(--raio-md);
   font: inherit;
   background: var(--cor-superficie);
@@ -232,6 +272,23 @@ ol {
 }
 
 
+/* Painel de destaque: bloco centrado com fundo de superfície, para uma mensagem
+   curta que fecha uma página (na home, "Por dentro, um projeto Django"). */
+.painel-destaque {
+  margin-block: var(--espaco-12) 0;
+  padding: var(--espaco-8) var(--espaco-6);
+  border-radius: var(--raio-lg);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-cartao);
+  text-align: center;
+}
+
+.painel-destaque p {
+  margin-inline: auto;
+  color: var(--cor-texto-suave);
+}
+
+
 /* 5. Cartões de receita ------------------------------------------------- */
 .cartao-receita {
   background: var(--cor-superficie);
@@ -258,6 +315,8 @@ ol {
 }
 
 .cartao-receita__categoria {
+  display: inline-block;
+  padding-block: var(--espaco-1); /* alvo de 24 px ou mais (WCAG 2.5.8), spec 008, RF-16 */
   color: var(--cor-destaque-escura);
   font-size: var(--texto-xs);
   font-weight: 700;
@@ -283,6 +342,7 @@ ol {
    uma receita inteira (capa maior, meta-informação, etiquetas de tag). */
 .receita-detalhe__capa {
   width: 100%;
+  aspect-ratio: 4 / 3; /* reserva o espaço antes da foto chegar: sem salto de layout (CLS), spec 008, RF-09 */
   max-height: 420px;
   object-fit: cover;
   border-radius: var(--raio-lg);
@@ -331,14 +391,23 @@ ol {
 
 
 /* 7. Botões e badges ------------------------------------------------------ */
+/* Rótulo no centro da caixa e fonte do corpo (spec 008, RF-10, ADR-1). O <button>
+   do navegador não herda a fonte (sairia em Arial 13 px ao lado do <a class="botao">
+   em Inter 16 px), então `font: inherit` vem antes do peso; sem justify-content o
+   rótulo de um botão de largura total ficava colado à esquerda. */
 .botao {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--espaco-2);
+  min-height: 3rem;
   padding: var(--espaco-3) var(--espaco-6);
   border: 1px solid transparent;
   border-radius: var(--raio-pill);
+  font: inherit;
   font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
   text-decoration: none;
   cursor: pointer;
   transition: background var(--transicao-rapida), border-color var(--transicao-rapida);
@@ -392,7 +461,7 @@ ol {
 .formulario__campo input,
 .formulario__campo textarea {
   padding: var(--espaco-3);
-  border: 1px solid var(--cor-borda);
+  border: 1px solid var(--cor-borda-campo);
   border-radius: var(--raio-md);
   font: inherit;
   background: var(--cor-superficie);
@@ -403,6 +472,12 @@ ol {
   margin: 0;
   font-size: var(--texto-xs);
   color: var(--cor-texto-suave);
+}
+
+/* A ajuda de senha chega do Django como uma lista de regras (<ul>). */
+.formulario__ajuda ul {
+  margin: 0;
+  padding-left: 1.25em;
 }
 
 .formulario__erro {
@@ -420,6 +495,12 @@ ol {
   width: 1px;
   height: 1px;
   overflow: hidden;
+}
+
+/* No celular o botão de envio ocupa a largura dos campos (alvo de toque grande);
+   no computador ele tem o tamanho do rótulo, ver seção 10. */
+.formulario .botao {
+  align-self: stretch;
 }
 
 /* Visualmente um link, estruturalmente um <button> dentro de um <form>. */
@@ -453,7 +534,7 @@ ol {
 }
 
 .mensagem--error {
-  background: #f8d7da;
+  background: var(--cor-erro-fundo);
   color: var(--cor-erro);
 }
 
@@ -517,5 +598,40 @@ ol {
 
   .hero__acoes {
     flex-direction: column;
+  }
+}
+
+/* Formulários em tela larga (spec 008, RF-10, ADR-1): um botão de 420 px para um
+   rótulo de 47 px fica desproporcional. Ele passa a ter o tamanho do conteúdo, no
+   centro da coluna nas páginas de acesso e à esquerda onde o formulário segue o
+   texto (comentário). */
+@media (min-width: 721px) {
+  .formulario .botao {
+    align-self: flex-start;
+    min-width: 10rem;
+  }
+
+  .pagina-formulario .formulario .botao {
+    align-self: center;
+  }
+}
+
+
+/* 11. Movimento reduzido (spec 008, RF-11) ------------------------------------
+   Quem pede "reduzir movimento" no sistema não recebe rolagem suave, cartão que
+   sobe no hover nem transição de cor. O bloco fica por último para vencer as
+   regras acima na cascata. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .cartao-receita,
+  .botao {
+    transition: none;
+  }
+
+  .cartao-receita:hover {
+    transform: none;
   }
 }

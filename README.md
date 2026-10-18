@@ -1,4 +1,4 @@
-![Blog Culinário — página inicial do projeto](assets/home-preview.png)
+![Blog Culinário: página inicial com receitas simples para todos os dias](assets/blog-culinario-home-receitas-simples-desktop.webp)
 
 # 🍲 Blog Culinário | Blog Multipáginas Educacional em Django
 
@@ -26,9 +26,10 @@ Este projeto foi estruturado para consolidar pilares fundamentais de engenharia 
 
 * **Modelagem de Domínio:** relacionamentos reais entre `Receita`, `Categoria`, `Tag` e `Comentario`, com políticas explícitas de `on_delete` para cada um.
 * **Dois Estilos de View:** baseadas em função (`nucleo`) e em classe (`receitas`), lado a lado, para comparar as duas abordagens.
-* **Design System Próprio:** herança de templates (`base.html` + blocks) e CSS puro em `static/css/tokens.css`, sem framework de frontend nem build step.
+* **Design System Próprio:** herança de templates (`base.html` + blocks) e CSS puro em `static/css/tokens.css`, sem framework de frontend nem build step. Fontes hospedadas no projeto, tema claro e escuro do sistema só por variáveis de cor, e um catálogo visual em `docs/design-system.html`.
 * **Autenticação Nativa:** `django.contrib.auth` sem lib externa, com limite de tentativas de login por IP.
 * **Segurança Aplicada:** honeypot e time-trap no formulário de comentário, validação de upload de imagem, segredos fora do código.
+* **Interface Auditada:** acessibilidade conferida em navegador real (axe-core, teclado, contraste, tema escuro) e guardada por testes, a partir da spec 008.
 * **Qualidade Automatizada:** suíte de testes com `pytest` e um pipeline de CI que roda o mesmo portão de qualidade usado localmente.
 
 ---

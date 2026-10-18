@@ -27,13 +27,17 @@
 
   --cor-fundo: #fbf4ea;
   --cor-superficie: #ffffff;
-  --cor-borda: #e8dcc8;
+  --cor-borda: #e8dcc8; /* divisórias e cartões: linha decorativa, 1,24:1 basta */
+  /* Borda de campo de formulário é componente de interface: a WCAG 1.4.11 pede 3:1
+     contra o fundo. 4,19:1 sobre a superfície branca e 3,83:1 sobre o creme (spec 008, RF-08). */
+  --cor-borda-campo: #8a7968;
 
   --cor-texto: #2f2620;
   --cor-texto-suave: #6b5d52;
   --cor-texto-invertido: #fbf4ea;
 
   --cor-erro: #b3261e;
+  --cor-erro-fundo: #f8d7da; /* caixa de mensagem de erro; vira token para o tema escuro (spec 008, RF-15) */
   --cor-sucesso: #2f6b3a;
 
   /* 2. Tipografia -------------------------------------------------------------
@@ -68,10 +72,50 @@
   --raio-lg: 20px;
   --raio-pill: 999px;
 
-  --sombra-cartao: 0 1px 2px rgba(47, 38, 32, 0.06), 0 8px 24px rgba(47, 38, 32, 0.08);
-  --sombra-elevada: 0 4px 8px rgba(47, 38, 32, 0.08), 0 16px 40px rgba(47, 38, 32, 0.14);
+  --sombra-cartao:
+    0 1px 2px rgba(47, 38, 32, 0.06), 0 8px 24px rgba(47, 38, 32, 0.08);
+  --sombra-elevada:
+    0 4px 8px rgba(47, 38, 32, 0.08), 0 16px 40px rgba(47, 38, 32, 0.14);
 
   /* 4. Transições --------------------------------------------------------- */
   --transicao-rapida: 150ms ease;
   --transicao-padrao: 250ms ease;
+
+  /* O site tem os dois temas: o navegador pinta barras de rolagem e controles
+     nativos no tema do sistema (spec 008, RF-15). */
+  color-scheme: light dark;
+}
+
+/* 5. Tema escuro do sistema ------------------------------------------------------
+   Só variáveis de cor: nenhum seletor de componente muda (spec 008, RF-15, ADR-3).
+   Segue o prefers-color-scheme do sistema, sem alternador. Terracota e verde ficam
+   mais claros para manter o contraste sobre o fundo marrom-escuro (texto acima de
+   4,5:1, conferido por nucleo/test_tema_escuro.py). Os valores que não aparecem
+   aqui (borda de campo, raios, espaços) valem nos dois temas. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cor-primaria: #f08a5d;
+    --cor-primaria-escura: #f5a782;
+    --cor-primaria-clara: #4a2a1b;
+
+    --cor-destaque: #9fc3a5;
+    --cor-destaque-escura: #9fc3a5;
+
+    --cor-fundo: #1c1612;
+    --cor-superficie: #2a221c;
+    --cor-borda: #4a3d33;
+
+    --cor-texto: #f3e9dc;
+    --cor-texto-suave: #c4b3a2;
+    --cor-texto-invertido: #1c1612;
+
+    --cor-erro: #ffb4ab;
+    --cor-erro-fundo: #42201e;
+    --cor-sucesso: #8fd19e;
+
+    --sombra-cartao:
+      0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+    --sombra-elevada:
+      0 4px 8px rgba(0, 0, 0, 0.45), 0 16px 40px rgba(0, 0, 0, 0.5);
+  }
 }

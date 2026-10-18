@@ -1,0 +1,35 @@
+/*
+ * Fontes hospedadas no projeto (fontes.css)
+ *
+ * Inter (corpo) e Fraunces (títulos) vêm de static/fonts/, não do Google Fonts:
+ * o navegador não envia o IP do visitante a um terceiro (LGPD), não espera um
+ * CSS externo para pintar a página e o site funciona sem internet. Carregado
+ * antes de tokens.css, que dá os nomes das famílias às variáveis de tipografia.
+ *
+ * Estrutura do arquivo:
+ *   1. Inter
+ *   2. Fraunces
+ */
+
+/* 1. Inter ------------------------------------------------------------------
+   Variável (um arquivo cobre 400 a 700), só o subconjunto latin: tem ç, ã, é e
+   os demais caracteres do português. font-display: swap mostra o texto na fonte
+   do sistema enquanto o arquivo chega, em vez de deixá-lo invisível. Licença
+   OFL, em static/fonts/LEIAME.md. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../fonts/inter-latin.woff2") format("woff2");
+}
+
+/* 2. Fraunces ---------------------------------------------------------------
+   Mesma ideia da Inter, para os títulos serifados. */
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../fonts/fraunces-latin.woff2") format("woff2");
+}
