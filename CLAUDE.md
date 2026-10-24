@@ -60,7 +60,7 @@ static/fonts/              # Inter e Fraunces (woff2 variável, subconjunto lati
 specs/                     # spec-driven development — ver specs/README.md
 docs/stack.md              # o que compõe a stack, por que e o que estudar
 docs/design-system.html    # catálogo visual (tokens, tipografia, componentes); abra direto no navegador — usa o tokens.css e o base.css do site
-.github/                   # CI (ci.yml), Dependabot (uv + github-actions), formulário de issue e template de PR
+.github/                   # CI (ci.yml), pip-audit semanal (pip-audit.yml), Dependabot (uv + github-actions), formulário de issue e template de PR
 ```
 
 Cada app novo do domínio segue o padrão de `nucleo`: `views.py` com funções
@@ -101,7 +101,9 @@ Regras que a auditoria de interface de 18/10/2026 deixou, guardadas por
 
 Sequência do portão: `ruff check` → `black --check` → `mypy` → `pytest` (skill
 `/qualidade-python`). CI (`.github/workflows/ci.yml`) roda a mesma sequência
-em todo push/PR.
+em todo push/PR. O `.github/workflows/pip-audit.yml` audita o `uv.lock` com `pip-audit`
+toda segunda, 09:00 de São Paulo (e à mão): o CI só roda em PR, e o Dependabot nem sempre
+abre PR de correção.
 
 ## Skills deste projeto
 
