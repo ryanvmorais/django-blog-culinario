@@ -104,7 +104,8 @@ uv run pytest             # testes
 ```
 
 O mesmo portão roda automaticamente em CI (`.github/workflows/ci.yml`) a cada
-push/PR. Para o mapa de cada tecnologia da stack (o que é, por que foi
+push/PR. Toda segunda-feira, o `.github/workflows/pip-audit.yml` audita o `uv.lock`
+em busca de CVEs. Para o mapa de cada tecnologia da stack (o que é, por que foi
 escolhida, o que estudar), veja [docs/stack.md](docs/stack.md); para as
 especificações de cada funcionalidade, veja [specs/](specs/); para o
 detalhamento de arquitetura e convenções, veja [CLAUDE.md](CLAUDE.md).
