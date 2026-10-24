@@ -1,0 +1,48 @@
+# Auditoria semanal de CVEs nas dependencias (pip-audit sobre o uv.lock).
+# Existe porque o CI so roda em PR e o Dependabot nem sempre abre PR de correcao
+# (o Pillow 13 nao saiu como PR no site): uma CVE publicada depois do ultimo PR
+# passaria despercebida. Run vermelho = vulnerabilidade conhecida no lock; o GitHub
+# avisa por e-mail quem editou o cron por ultimo. Rode `/atualizar-dependencias`.
+#
+# Audita o lock inteiro (runtime, extras e grupos de dev), sem depender de o projeto
+# ter o pip-audit como dependencia. A ferramenta roda com o mesmo cooldown de 7 dias
+# das demais dependencias.
+#
+# As Actions ficam fixadas pelo SHA do commit, com a versao no comentario: uma tag
+# pode ser movida depois de publicada, o SHA nao. O Dependabot (github-actions)
+# atualiza o SHA e o comentario juntos.
+name: pip-audit semanal
+
+on:
+  schedule:
+    # Segunda, 09:00 em Sao Paulo (UTC-3): depois dos PRs do Dependabot de domingo.
+    - cron: "0 12 * * 1"
+  workflow_dispatch:
+
+# Um run por vez; um disparo manual no meio da semana nao empilha com o agendado.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pip-audit:
+    name: pip-audit (CVEs no uv.lock)
+    runs-on: ubuntu-26.04
+    # Um run normal leva menos de 1 minuto; o teto evita que um job travado gaste a cota.
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Instala o uv
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+
+      - name: Exporta o uv.lock para requirements
+        run: uv export --frozen --no-emit-project --no-hashes --all-groups --all-extras -o requirements-audit.txt
+
+      # --no-deps: o export ja traz o grafo completo e travado; sem isso o pip-audit
+      # tentaria resolver de novo e auditaria um conjunto que nao e o do lock.
+      - name: pip-audit (CVEs conhecidas)
+        run: uvx --exclude-newer "7 days" pip-audit --requirement requirements-audit.txt --no-deps --disable-pip
