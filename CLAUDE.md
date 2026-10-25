@@ -55,7 +55,7 @@ defaults seguros. Ver `.env.example` para a lista completa e
 blog_culinario/settings/   # base.py (comum) + dev.py / prod.py (por ambiente)
 blog_culinario/limitacao.py # rate limit por IP via cache do Django (login e comentário — spec 006)
 nucleo/                    # páginas institucionais: hoje só a home (sobre e contato entram em specs futuras)
-receitas/                  # domínio principal: Receita, Categoria, Tag, Comentario
+receitas/                  # domínio principal: Receita, Categoria, Tag, Comentario; management/commands/semear_dados_demo.py (dados do Lighthouse CI) e seu teste
 usuarios/                  # autenticação (django.contrib.auth)
 templates/                 # base.html + includes/ (navbar, rodapé) + 404, 403 e 500
 static/css/                # design system: tokens.css (variáveis e tema escuro), fontes.css (@font-face) e base.css
