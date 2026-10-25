@@ -1,0 +1,124 @@
+# Lighthouse CI: audita as páginas públicas do blog (mobile e desktop) e falha quando
+# acessibilidade, SEO, contraste, alvos de toque, erros de console, CLS, imagens sem
+# dimensão ou peso regridem. Os limites ficam em .github/lighthouse/{mobile,desktop}.json.
+#
+# Por que um workflow separado do ci.yml: o Lighthouse leva alguns minutos e tem
+# variância em runner compartilhado; o ci.yml (qualidade) precisa continuar rápido.
+# Ele NÃO é um check obrigatório da main de propósito: um check instável que bloqueia
+# merge ensina a ignorá-lo. Vira obrigatório depois de algumas semanas estável.
+#
+# Gatilhos: o repositório é público, então os minutos de Actions e o armazenamento dos
+# artefatos não têm teto, e o workflow roda em PR (só quando algo que muda a página
+# muda), na main e à mão (Actions > Lighthouse > Run workflow).
+#
+# O site sobe com dados de demonstração (manage.py semear_dados_demo): um banco vazio
+# daria páginas vazias, e a de detalhe de receita nem existiria. As imagens são geradas
+# localmente, então o CI não depende de rede externa.
+#
+# Os números são comparação relativa entre PRs (servidor de desenvolvimento, rede
+# simulada). Os valores reais só existem em produção.
+name: Lighthouse
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "templates/**"
+      - "*/templates/**"
+      - "static/**"
+      - "*/views.py"
+      - "*/models.py"
+      - "*/management/**"
+      - "uv.lock"
+      - ".github/lighthouse/**"
+      - ".github/workflows/lighthouse.yml"
+  workflow_dispatch:
+
+# Cancela runs obsoletos do mesmo ref: um push novo no PR mata o run anterior.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    # Mobile e desktop em paralelo: a falha de um perfil não esconde o resultado do outro.
+    strategy:
+      fail-fast: false
+      matrix:
+        perfil: [mobile, desktop]
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    env:
+      # Fixada de propósito: cada versão do @lhci/cli embute uma versão do
+      # Lighthouse, e a versão muda as notas. O Dependabot não enxerga um npx:
+      # atualize aqui à mão e recalibre os limites em .github/lighthouse/.
+      # 0.15.1 = Lighthouse 12.6.1.
+      LHCI_VERSION: "0.15.1"
+    steps:
+      - name: Baixa o repositório
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Instala o uv
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          # Sem python-version: o uv lê o .python-version (3.12, o piso do deploy).
+          enable-cache: true
+
+      - name: Instala o Node (para o @lhci/cli)
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+
+      - name: Sincroniza o ambiente (só o runtime)
+        run: uv sync --frozen --no-dev
+
+      # O manage.py usa o settings de desenvolvimento (DEBUG=True), que serve os
+      # estáticos sem collectstatic e deixa o semear_dados_demo rodar.
+      - name: Migra o banco e cria os dados de demonstração
+        run: |
+          uv run python manage.py migrate --noinput
+          uv run python manage.py semear_dados_demo
+
+      - name: Sobe o servidor e espera responder
+        run: |
+          nohup uv run python manage.py runserver 8000 --noreload > servidor.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fs http://127.0.0.1:8000/ > /dev/null && exit 0
+            sleep 1
+          done
+          echo "O servidor não respondeu em 30 s:"
+          cat servidor.log
+          exit 1
+
+      - name: Lighthouse (${{ matrix.perfil }})
+        run: >-
+          npx --yes @lhci/cli@${LHCI_VERSION} autorun
+          --config=.github/lighthouse/${{ matrix.perfil }}.json
+
+      # O tee deixa a tabela também no log do job (o resumo do job só aparece na
+      # interface do GitHub; o log é consultável por `gh run view --log`).
+      - name: Resumo no PR
+        if: ${{ !cancelled() }}
+        run: python3 .github/lighthouse/resumo.py ${{ matrix.perfil }} | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Log do servidor
+        if: ${{ failure() }}
+        run: tail -n 60 servidor.log || true
+
+      # Os relatórios HTML completos ficam como artefato (nada vai para o armazenamento
+      # público do Lighthouse). O .lighthouseci começa com ponto: sem
+      # include-hidden-files o upload-artifact o ignora, e com o padrão
+      # if-no-files-found=warn o passo passava com apenas um aviso.
+      - name: Guarda os relatórios
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: lighthouse-${{ matrix.perfil }}
+          path: .lighthouseci
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

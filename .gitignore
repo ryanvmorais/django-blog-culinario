@@ -44,3 +44,6 @@ db.sqlite3-journal
 .idea/
 .DS_Store
 Thumbs.db
+
+# Relatórios do Lighthouse CI gerados localmente (o CI os guarda como artefato).
+.lighthouseci/
