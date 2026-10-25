@@ -196,6 +196,10 @@ faz, como ler um erro `[import-untyped]`/`[arg-type]`.
 | Inter | Tipografia de corpo — legibilidade em tela. Também hospedada em `static/fonts/`; as duas são declaradas em `static/css/fontes.css`. |
 | `django.contrib.humanize` | Filtros de template (`timesince`, `intcomma`) nas páginas de receita. |
 | WhiteNoise (dev) | Também ativo em desenvolvimento — evita duas configurações de estático divergentes. |
+| `static/js/interacoes.js` | JS puro, sem framework nem build, carregado com `defer` no `base.html`. Hoje cuida do menu mobile (teclado, `aria-expanded`, Esc e clique fora). |
+| GitHub Actions | `ci.yml` roda o portão de qualidade (ruff, black, mypy, pytest) em todo PR e em todo push na `main`, numa matriz com Python 3.12 (o piso) e 3.14. |
+| Dependabot | `.github/dependabot.yml` abre PRs de atualização para o `uv` e para as próprias Actions; os PRs são revisados, não mergeados sozinhos. |
+| pip-audit | `pip-audit.yml` audita o `uv.lock` atrás de CVEs toda segunda, 09:00 de São Paulo (e sob demanda): o CI só roda em PR e o Dependabot nem sempre abre PR de correção. |
 
 ## O que deliberadamente não está na stack
 
