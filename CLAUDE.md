@@ -57,6 +57,7 @@ usuarios/                  # autenticação (django.contrib.auth)
 templates/                 # base.html + includes/ (navbar, rodapé) + 404, 403 e 500
 static/css/                # design system: tokens.css (variáveis e tema escuro), fontes.css (@font-face) e base.css
 static/fonts/              # Inter e Fraunces (woff2 variável, subconjunto latin, licença OFL)
+static/js/, static/img/    # interacoes.js (JS puro, sem build) e favicon.svg
 specs/                     # spec-driven development — ver specs/README.md
 docs/stack.md              # o que compõe a stack, por que e o que estudar
 docs/design-system.html    # catálogo visual (tokens, tipografia, componentes); abra direto no navegador — usa o tokens.css e o base.css do site
@@ -101,7 +102,7 @@ Regras que a auditoria de interface de 18/10/2026 deixou, guardadas por
 
 Sequência do portão: `ruff check` → `black --check` → `mypy` → `pytest` (skill
 `/qualidade-python`). CI (`.github/workflows/ci.yml`) roda a mesma sequência
-em todo push/PR. O `.github/workflows/pip-audit.yml` audita o `uv.lock` com `pip-audit`
+em todo PR e em todo push na `main`. O `.github/workflows/pip-audit.yml` audita o `uv.lock` com `pip-audit`
 toda segunda, 09:00 de São Paulo (e à mão): o CI só roda em PR, e o Dependabot nem sempre
 abre PR de correção.
 
