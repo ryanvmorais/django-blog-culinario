@@ -29,6 +29,9 @@ uv run python manage.py migrate
 # Criar um usuário para acessar /admin/
 uv run python manage.py createsuperuser
 
+# Dados de demonstração (receitas, capas e comentários; só com DEBUG=True)
+uv run python manage.py semear_dados_demo
+
 # Portão de qualidade (ver skill /qualidade-python)
 uv run ruff check .
 uv run black --check .
@@ -61,7 +64,7 @@ static/js/, static/img/    # interacoes.js (JS puro, sem build) e favicon.svg
 specs/                     # spec-driven development — ver specs/README.md
 docs/stack.md              # o que compõe a stack, por que e o que estudar
 docs/design-system.html    # catálogo visual (tokens, tipografia, componentes); abra direto no navegador — usa o tokens.css e o base.css do site
-.github/                   # CI (ci.yml), pip-audit semanal (pip-audit.yml), Dependabot (uv + github-actions), formulário de issue e template de PR
+.github/                   # CI (ci.yml), pip-audit semanal (pip-audit.yml), Lighthouse CI (lighthouse.yml + lighthouse/), Dependabot (uv + github-actions), formulário de issue e template de PR
 ```
 
 Cada app novo do domínio segue o padrão de `nucleo`: `views.py` com funções
@@ -105,6 +108,8 @@ Sequência do portão: `ruff check` → `black --check` → `mypy` → `pytest` 
 em todo PR e em todo push na `main`. O `.github/workflows/pip-audit.yml` audita o `uv.lock` com `pip-audit`
 toda segunda, 09:00 de São Paulo (e à mão): o CI só roda em PR, e o Dependabot nem sempre
 abre PR de correção.
+
+**Lighthouse CI** (`.github/workflows/lighthouse.yml`): audita 5 páginas públicas (home, lista e detalhe de receita, entrar e cadastro), em mobile e desktop, com 3 medições e mediana. Roda em PR quando muda template, estático, view, model, o comando de dados ou a configuração, no push da `main` e à mão (`workflow_dispatch`); repo público, então sem teto de minutos. **Não é check obrigatório** (o Lighthouse varia em runner compartilhado). O servidor sobe com os dados de `manage.py semear_dados_demo` (idempotente, recusa `DEBUG=False`, capas geradas com o Pillow, sem rede). Limites em `.github/lighthouse/{mobile,desktop}.json`: **erro** para acessibilidade, boas práticas e SEO < 95, CLS > 0,1, peso por página, e `color-contrast`, `unsized-images`, `target-size` e `errors-in-console` como asserções próprias; **aviso** para a nota de Performance. `@lhci/cli` fixado em `LHCI_VERSION` (o Dependabot não vê um `npx`: ao subir, recalibre os limites). Os números são comparação relativa; os reais só existem em produção. Página nova importante entra nos dois JSON; o `receitas/test_semear_dados_demo.py` guarda que toda URL responde 200 e que mobile e desktop auditam o mesmo.
 
 ## Skills deste projeto
 
