@@ -158,7 +158,7 @@ formulário isolado colado à esquerda de uma tela larga parece esquecido.
 - Os testes que procuravam o texto antigo da home não existem (só procuram receitas).
 - O `docs/design-system.html` carrega fontes do Google Fonts; passa a carregar
   `fontes.css`.
-- O `README.md` mostra `assets/blog-culinario-home-receitas-simples-desktop.webp`: a captura é refeita porque a abertura
+- O `README.md` mostra `assets/blog-culinario-django-home-receitas-desktop.webp`: a captura é refeita porque a abertura
   da home mudou.
 
 ## Estratégia de testes
