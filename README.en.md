@@ -1,6 +1,6 @@
 ![Blog Culinário: home page with simple everyday recipes](assets/blog-culinario-django-home-receitas-desktop.webp)
 
-# 🍲 Blog Culinário | Educational Multi-Page Blog in Django
+# 🍲 Blog Culinário | Django Recipe Blog for Learning Web Development
 
 [Português (Brasil)](README.md) · **English**
 
