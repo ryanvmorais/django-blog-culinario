@@ -78,6 +78,10 @@ simples primeiro, `urls.py` com `app_name` namespaced, templates em
 - **Estilo de arquivo** (docstrings, type hints, seções, comentários): sempre
   consulte `/estilo-arquivos` antes de criar ou editar um arquivo.
 
+- **README bilíngue:** `README.md` (português) e `README.en.md` (inglês) têm as
+  mesmas seções, na mesma ordem. Mudou um, muda o outro no mesmo PR; o
+  `nucleo/test_readme_en.py` compara títulos, tabela e links.
+
 ## Interface (spec 008)
 
 Regras que a auditoria de interface de 18/10/2026 deixou, guardadas por

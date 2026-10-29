@@ -2,9 +2,11 @@
 
 # 🍲 Blog Culinário | Blog Multipáginas Educacional em Django
 
+**Português (Brasil)** · [English](README.en.md)
+
 ![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)
 ![Django](https://img.shields.io/badge/Django-6.1-092E20?logo=django&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-banco-003B57?logo=sqlite&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-database-003B57?logo=sqlite&logoColor=white)
 ![deps](https://img.shields.io/badge/deps-uv-DE5FE9)
 [![CI](https://github.com/ryanvmorais/django-blog-culinario/actions/workflows/ci.yml/badge.svg)](https://github.com/ryanvmorais/django-blog-culinario/actions/workflows/ci.yml)
 ![Lint](https://img.shields.io/badge/lint-ruff-261230)
@@ -100,13 +102,20 @@ Quer ver o site com receitas de exemplo sem cadastrar nada? Rode `uv run python 
 O projeto roda uma suíte de testes automatizados (`pytest`) e um portão de qualidade antes de qualquer commit:
 
 ```bash
-uv run ruff check .      # lint + ordem de imports
-uv run black --check .   # formatação
-uv run mypy .            # checagem de tipos
-uv run pytest            # testes
+# Lint + ordem de imports
+uv run ruff check .
+
+# Formatação
+uv run black --check .
+
+# Checagem de tipos
+uv run mypy .
+
+# Testes
+uv run pytest
 ```
 
-O mesmo portão roda automaticamente em CI (`.github/workflows/ci.yml`) a cada PR e a cada push na `main`. Toda segunda-feira, o `.github/workflows/pip-audit.yml` audita o `uv.lock` em busca de CVEs, e o `.github/workflows/lighthouse.yml` audita as páginas públicas (acessibilidade, SEO, contraste, alvos de toque, CLS e peso) em mobile e desktop. Para o mapa de cada tecnologia da stack (o que é, por que foi escolhida, o que estudar), veja [docs/stack.md](docs/stack.md). Para as especificações de cada funcionalidade, veja [specs/](specs/). Para o detalhamento de arquitetura e convenções, veja [CLAUDE.md](CLAUDE.md).
+O mesmo portão roda automaticamente em CI (`.github/workflows/ci.yml`) a cada PR e a cada push na `main`, no Python 3.12 (o piso do projeto) e no 3.14. Toda segunda-feira, o `.github/workflows/pip-audit.yml` audita o `uv.lock` em busca de CVEs. Já o `.github/workflows/lighthouse.yml` audita as páginas públicas (acessibilidade, SEO, contraste, alvos de toque, CLS e peso) em mobile e desktop a cada PR que muda a interface e a cada push na `main`; ele não bloqueia o merge, porque o Lighthouse oscila em servidor compartilhado. Para o mapa de cada tecnologia da stack (o que é, por que foi escolhida, o que estudar), veja [docs/stack.md](docs/stack.md). Para as especificações de cada funcionalidade, veja [specs/](specs/). Para o detalhamento de arquitetura e convenções, veja [CLAUDE.md](CLAUDE.md).
 
 ---
 
